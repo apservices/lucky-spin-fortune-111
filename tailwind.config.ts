@@ -143,6 +143,31 @@ export default {
 				'dragon-fire': {
 					'0%, 100%': { opacity: '0.8', transform: 'scale(1)' },
 					'50%': { opacity: '1', transform: 'scale(1.1)' }
+				},
+				'pgbet-reel-spin': {
+					'0%': { transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)' },
+					'25%': { transform: 'perspective(1000px) rotateX(15deg) rotateY(5deg) scale(1.05)' },
+					'50%': { transform: 'perspective(1000px) rotateX(0deg) rotateY(10deg) scale(1)' },
+					'75%': { transform: 'perspective(1000px) rotateX(-15deg) rotateY(5deg) scale(1.05)' },
+					'100%': { transform: 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)' }
+				},
+				'pgbet-win-pulse': {
+					'0%': { transform: 'scale(1)', boxShadow: '0 0 20px rgba(255, 215, 0, 0.5)' },
+					'50%': { transform: 'scale(1.05)', boxShadow: '0 0 40px rgba(255, 215, 0, 0.8)' },
+					'100%': { transform: 'scale(1)', boxShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }
+				},
+				'pgbet-glow': {
+					'0%, 100%': { boxShadow: '0 0 20px currentColor' },
+					'50%': { boxShadow: '0 0 40px currentColor, 0 0 60px currentColor' }
+				},
+				'float': {
+					'0%, 100%': { transform: 'translateY(0px)' },
+					'50%': { transform: 'translateY(-20px)' }
+				},
+				'pgbet-coin-float': {
+					'0%': { transform: 'translateY(0px) rotate(0deg)', opacity: '0.2' },
+					'50%': { transform: 'translateY(-30px) rotate(180deg)', opacity: '0.4' },
+					'100%': { transform: 'translateY(0px) rotate(360deg)', opacity: '0.2' }
 				}
 			},
 			animation: {
@@ -155,7 +180,11 @@ export default {
 				'yin-yang-spin': 'yin-yang-spin 2s ease-in-out',
 				'reel-spin': 'reel-spin 1s ease-in-out infinite',
 				'coin-rain': 'coin-rain 3s linear infinite',
-				'dragon-fire': 'dragon-fire 1.5s ease-in-out infinite'
+				'dragon-fire': 'dragon-fire 1.5s ease-in-out infinite',
+				'pgbet-reel-spin': 'pgbet-reel-spin 0.1s ease-in-out infinite',
+				'pgbet-win-pulse': 'pgbet-win-pulse 1s ease-in-out infinite',
+				'pgbet-glow': 'pgbet-glow 2s ease-in-out infinite',
+				'pgbet-coin-float': 'pgbet-coin-float 6s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',

@@ -242,21 +242,46 @@ export const ZodiacFortuneSlot: React.FC<ZodiacFortuneSlotProps> = ({
             <div className="absolute inset-0 bg-pgbet-gradient-gold opacity-20 animate-pgbet-win-pulse rounded-lg z-10"></div>
           )}
           
-          <div className="grid grid-cols-3 gap-2 p-4 bg-gradient-to-b from-gray-900 to-black rounded-lg border-4 border-pgbet-gold">
+          <div className="grid grid-cols-3 gap-3 p-6 bg-gradient-to-b from-gray-900 via-black to-gray-900 rounded-xl border-4 border-pgbet-gold shadow-2xl relative">
+            {/* 3D Perspective Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-pgbet-gold/5 via-transparent to-pgbet-red/5 rounded-lg"></div>
+            
             {reels.map((column, colIndex) => (
-              <div key={colIndex} className="space-y-2">
+              <div key={colIndex} className="space-y-3 relative">
                 {column.map((symbol, rowIndex) => (
                   <div
                     key={`${colIndex}-${rowIndex}`}
                     className={`
-                      h-20 flex items-center justify-center text-4xl
-                      bg-gradient-to-br from-gray-800 to-gray-900
-                      border-2 border-gray-600 rounded-lg
-                      ${isSpinning ? 'animate-pgbet-reel-spin' : ''}
-                      ${showWin && rowIndex === 1 ? 'ring-4 ring-pgbet-gold animate-pgbet-glow' : ''}
+                      h-24 flex items-center justify-center text-5xl relative
+                      bg-gradient-to-br from-gray-800 via-gray-900 to-black
+                      border-3 border-gradient-to-r from-pgbet-gold/50 to-pgbet-red/50
+                      rounded-xl shadow-lg transform-gpu
+                      ${isSpinning ? 'animate-[spin_0.1s_ease-in-out_infinite] scale-110 blur-sm' : 'hover:scale-105 transition-all duration-300'}
+                      ${showWin && rowIndex === 1 ? 'ring-4 ring-pgbet-gold animate-pulse scale-110 shadow-2xl shadow-pgbet-gold/50' : ''}
+                      before:content-[''] before:absolute before:inset-0 before:bg-gradient-to-br before:from-white/10 before:to-transparent before:rounded-xl before:pointer-events-none
+                      after:content-[''] after:absolute after:inset-0 after:bg-gradient-to-t after:from-black/30 after:to-transparent after:rounded-xl after:pointer-events-none
                     `}
+                    style={{
+                      transform: isSpinning ? `perspective(1000px) rotateX(${Math.sin(Date.now() * 0.01 + colIndex) * 10}deg) rotateY(${Math.cos(Date.now() * 0.01 + rowIndex) * 5}deg)` : 'perspective(1000px) rotateX(2deg)',
+                      boxShadow: showWin && rowIndex === 1 ? '0 0 40px rgba(255, 215, 0, 0.8), inset 0 0 20px rgba(255, 215, 0, 0.3)' : '0 8px 32px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                    }}
                   >
-                    <span className={symbol.color}>{symbol.emoji}</span>
+                    <span 
+                      className={`${symbol.color} relative z-10 drop-shadow-lg transform transition-all duration-300 ${
+                        showWin && rowIndex === 1 ? 'animate-bounce scale-125' : ''
+                      }`}
+                      style={{
+                        filter: 'drop-shadow(0 0 10px currentColor)',
+                        textShadow: '0 0 20px currentColor, 0 0 40px currentColor'
+                      }}
+                    >
+                      {symbol.emoji}
+                    </span>
+                    
+                    {/* Mystical glow effect */}
+                    <div className={`absolute inset-0 bg-gradient-radial from-current/20 to-transparent rounded-xl ${
+                      showWin && rowIndex === 1 ? 'animate-ping' : ''
+                    }`}></div>
                   </div>
                 ))}
               </div>

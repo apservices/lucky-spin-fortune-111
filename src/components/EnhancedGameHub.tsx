@@ -55,6 +55,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
+  const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
 
   // Available games
   const games = [
@@ -161,6 +162,15 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
   const canPlayGame = (gameMinLevel: number) => level >= gameMinLevel;
 
+  const handlePlayGame = (gameId: string) => {
+    if (energy < 1) {
+      toast.error('⚡ Energia insuficiente!');
+      return;
+    }
+    setActiveGame(gameId);
+    toast.success(`🎮 ${games.find(g => g.id === gameId)?.name} carregado!`);
+  };
+
   const renderGameCard = (game: any) => (
     <Card key={game.id} className={`p-6 transition-all hover:scale-105 cursor-pointer ${
       game.featured 
@@ -206,6 +216,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
           <Button
             disabled={!canPlayGame(game.minLevel) || energy < 1}
+            onClick={() => handlePlayGame(game.id)}
             className={`${game.featured 
               ? 'bg-gradient-gold hover:scale-105 text-fortune-dark' 
               : ''
@@ -348,12 +359,55 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
             {/* Active Game Area */}
             <div className="mt-8">
               <Card className="p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
-                <ZodiacFortuneSlot
-                  coins={coins}
-                  energy={energy}
-                  onCoinsChange={onCoinsChange}
-                  onEnergyChange={onEnergyChange}
-                />
+                <div className="text-center mb-4">
+                  <h3 className="text-xl font-bold text-pgbet-gold">
+                    🎮 {games.find(g => g.id === activeGame)?.name || 'Zodiac Fortune Slots'}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {games.find(g => g.id === activeGame)?.description || 'Gire e ganhe fortunas!'}
+                  </p>
+                </div>
+                
+                {activeGame === 'fortune-tiger' && (
+                  <ZodiacFortuneSlot
+                    coins={coins}
+                    energy={energy}
+                    onCoinsChange={onCoinsChange}
+                    onEnergyChange={onEnergyChange}
+                  />
+                )}
+                
+                {activeGame === 'wheel-fortune' && (
+                  <WheelGame
+                    coins={coins}
+                    energy={energy}
+                    onCoinsChange={onCoinsChange}
+                    onEnergyChange={onEnergyChange}
+                  />
+                )}
+                
+                {activeGame === 'wild-slots' && (
+                  <FortuneTigerSlot
+                    coins={coins}
+                    energy={energy}
+                    onCoinsChange={onCoinsChange}
+                    onEnergyChange={onEnergyChange}
+                  />
+                )}
+                
+                {(activeGame === 'dragon-treasure' || activeGame === 'phoenix-fire' || activeGame === 'golden-palace') && (
+                  <div className="text-center py-12">
+                    <div className="text-6xl mb-4">🔒</div>
+                    <h3 className="text-2xl font-bold text-pgbet-gold mb-2">Em Breve!</h3>
+                    <p className="text-gray-400">Este jogo incrível está sendo desenvolvido...</p>
+                    <Button 
+                      onClick={() => setActiveGame('fortune-tiger')}
+                      className="mt-4 bg-pgbet-gradient-gold text-black"
+                    >
+                      Voltar para Fortune Tiger
+                    </Button>
+                  </div>
+                )}
               </Card>
             </div>
           </TabsContent>
