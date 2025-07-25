@@ -61,6 +61,17 @@ export default {
 					crimson: 'hsl(var(--fortune-crimson))',
 					bronze: 'hsl(var(--fortune-bronze))'
 				},
+				pgbet: {
+					gold: 'hsl(var(--pgbet-gold))',
+					red: 'hsl(var(--pgbet-red))',
+					dark: 'hsl(var(--pgbet-dark))',
+					emerald: 'hsl(var(--pgbet-emerald))',
+					purple: 'hsl(var(--pgbet-purple))',
+					amber: 'hsl(var(--pgbet-amber))',
+					bronze: 'hsl(var(--pgbet-bronze))',
+					crimson: 'hsl(var(--pgbet-crimson))',
+					jade: 'hsl(var(--pgbet-jade))'
+				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WheelGame } from './WheelGame';
 import { SlotMachine } from './SlotMachine';
 import { FortuneTigerSlot } from './FortuneTigerSlot';
+import { ZodiacFortuneSlot } from './ZodiacFortuneSlot';
 import { MissionsSystem } from './MissionsSystem';
 import { CollectiblesSystem } from './CollectiblesSystem';
 import { VIPSystem } from './VIPSystem';
@@ -346,8 +347,8 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
             {/* Active Game Area */}
             <div className="mt-8">
-              <Card className="p-6">
-                <FortuneTigerSlot
+              <Card className="p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
+                <ZodiacFortuneSlot
                   coins={coins}
                   energy={energy}
                   onCoinsChange={onCoinsChange}

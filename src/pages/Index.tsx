@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { EnhancedGameHub } from '@/components/EnhancedGameHub';
+import { FloatingCoinsBackground } from '@/components/FloatingCoinsBackground';
 import { GameStats } from '@/components/GameStats';
 import { GameHeader } from '@/components/GameHeader';
 import { DailyRewards } from '@/components/DailyRewards';
@@ -159,43 +160,44 @@ const Index = () => {
 
   if (!gameStarted) {
     return (
-      <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4">
-        <Card className="max-w-md w-full p-8 text-center bg-card/80 backdrop-blur-md border-2 border-fortune-gold shadow-glow-gold">
+      <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4 relative">
+        <FloatingCoinsBackground />
+        <Card className="max-w-md w-full p-8 text-center bg-card/80 backdrop-blur-md border-2 border-pgbet-gold shadow-2xl relative z-10">
           <div className="space-y-6">
             <div className="space-y-2">
-              <h1 className="text-4xl font-bold bg-gradient-gold bg-clip-text text-transparent">
-                Lucky Fortune Animal
+              <h1 className="text-4xl font-bold bg-pgbet-gradient-gold bg-clip-text text-transparent">
+                Zodiac Fortune Slots
               </h1>
-              <p className="text-xl text-fortune-red">🐯 Fortune Tiger Edition 🐯</p>
+              <p className="text-xl text-pgbet-red">🐯 Spin, Celebrate, Rise 🐯</p>
             </div>
             
             <div className="space-y-4 text-left">
-              <div className="flex items-center space-x-3 p-3 bg-fortune-gold/10 rounded-lg border border-fortune-gold/30">
-                <PlayCircle className="w-6 h-6 text-fortune-gold" />
-                <span className="text-fortune-gold">Gire os rolos e ganhe prêmios em dinheiro</span>
+              <div className="flex items-center space-x-3 p-3 bg-pgbet-gold/10 rounded-lg border border-pgbet-gold/30">
+                <PlayCircle className="w-6 h-6 text-pgbet-gold" />
+                <span className="text-pgbet-gold">Gire os rolos zodiacais e ganhe fortunas</span>
               </div>
               
-              <div className="flex items-center space-x-3 p-3 bg-fortune-red/10 rounded-lg border border-fortune-red/30">
-                <Zap className="w-6 h-6 text-fortune-red" />
-                <span className="text-fortune-red">Sistema de energia: 1 energia = 1 giro</span>
+              <div className="flex items-center space-x-3 p-3 bg-pgbet-red/10 rounded-lg border border-pgbet-red/30">
+                <Zap className="w-6 h-6 text-pgbet-red" />
+                <span className="text-pgbet-red">Sistema de energia: 1 energia = 1 giro</span>
               </div>
               
-              <div className="flex items-center space-x-3 p-3 bg-fortune-ember/10 rounded-lg border border-fortune-ember/30">
-                <Gift className="w-6 h-6 text-fortune-ember" />
-                <span className="text-fortune-ember">Bônus diários e jackpots especiais</span>
+              <div className="flex items-center space-x-3 p-3 bg-pgbet-emerald/10 rounded-lg border border-pgbet-emerald/30">
+                <Gift className="w-6 h-6 text-pgbet-emerald" />
+                <span className="text-pgbet-emerald">Símbolos místicos e multiplicadores até 15x</span>
               </div>
               
-              <div className="flex items-center space-x-3 p-3 bg-fortune-bronze/10 rounded-lg border border-fortune-bronze/30">
-                <Star className="w-6 h-6 text-fortune-bronze" />
-                <span className="text-fortune-bronze">Multiplique seus ganhos até 15x</span>
+              <div className="flex items-center space-x-3 p-3 bg-pgbet-purple/10 rounded-lg border border-pgbet-purple/30">
+                <Star className="w-6 h-6 text-pgbet-purple" />
+                <span className="text-pgbet-purple">Tigre Dourado - Jackpot Lendário!</span>
               </div>
             </div>
             
             <Button 
               onClick={startGame}
-              className="w-full h-14 text-lg bg-gradient-gold hover:scale-105 animate-glow-pulse text-fortune-dark font-bold border-2 border-fortune-ember"
+              className="w-full h-14 text-lg bg-pgbet-gradient-gold hover:scale-105 animate-pgbet-glow text-black font-bold border-2 border-pgbet-red shadow-2xl"
             >
-              🎰 JOGAR AGORA
+              🎰 ENTRAR NO ZODÍACO
             </Button>
             
             <div className="text-xs text-muted-foreground">
@@ -208,26 +210,29 @@ const Index = () => {
   }
 
   return (
-    <EnhancedGameHub
-      coins={coins}
-      energy={energy}
-      level={level}
-      experience={experience}
-      maxExperience={maxExperience}
-      maxEnergy={maxEnergy}
-      totalSpins={totalSpins}
-      totalCoinsEarned={totalCoinsEarned}
-      dailyStreak={dailyStreak}
-      lastWin={lastWin}
-      onCoinsChange={handleCoinsChange}
-      onEnergyChange={handleEnergyChange}
-      onExperienceChange={setExperience}
-      onLevelUp={() => {
-        setLevel(prev => prev + 1);
-        setExperience(0);
-        setCoins(prev => prev + 500);
-      }}
-    />
+    <div className="relative">
+      <FloatingCoinsBackground />
+      <EnhancedGameHub
+        coins={coins}
+        energy={energy}
+        level={level}
+        experience={experience}
+        maxExperience={maxExperience}
+        maxEnergy={maxEnergy}
+        totalSpins={totalSpins}
+        totalCoinsEarned={totalCoinsEarned}
+        dailyStreak={dailyStreak}
+        lastWin={lastWin}
+        onCoinsChange={handleCoinsChange}
+        onEnergyChange={handleEnergyChange}
+        onExperienceChange={setExperience}
+        onLevelUp={() => {
+          setLevel(prev => prev + 1);
+          setExperience(0);
+          setCoins(prev => prev + 500);
+        }}
+      />
+    </div>
   );
 };
 
