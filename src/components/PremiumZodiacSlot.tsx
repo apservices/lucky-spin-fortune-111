@@ -27,6 +27,7 @@ import { ThemeSystem, GameTheme, themes, type ThemeConfig } from './ThemeSystem'
 import { AudioSystem, gameAudio } from './AudioSystem';
 import { SpriteComponent, SpriteSystem, SYMBOL_SPRITES, type SpriteSymbol } from './SpriteSystem';
 import { premiumAudio } from './PremiumAudioSystem';
+import { useGameHaptics } from './HapticSystem';
 
 interface PremiumZodiacSlotProps {
   coins: number;
@@ -104,6 +105,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   
   const slotRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  
+  // Advanced Haptic System
+  const gameHaptics = useGameHaptics();
 
   // Generate floating background coins
   useEffect(() => {
@@ -253,18 +257,6 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const playSound = useCallback((type: string) => {
     if (!soundEnabled) return;
     
-    // Trigger haptic feedback for mobile devices
-    if (navigator.vibrate) {
-      const vibrationPattern: { [key: string]: number[] } = {
-        spin: [50],
-        win: [100, 50, 100],
-        bigwin: [200, 100, 200, 100, 200],
-        jackpot: [300, 100, 300, 100, 300, 100, 300],
-        coin: [30],
-      };
-      navigator.vibrate(vibrationPattern[type] || [50]);
-    }
-    
     // Use advanced audio system
     switch (type) {
       case 'spin':
@@ -322,6 +314,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     setIsSpinning(true);
     setShowWin(false);
     
+    // Haptic: Spin start
+    gameHaptics.spinStart();
+    
     // Audio: Spin start
     await premiumAudio.playSpinStart();
     
@@ -336,6 +331,10 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
 
     // Audio: Whoosh during spin
     setTimeout(() => premiumAudio.playSpinWhoosh(), 200);
+    
+    // Haptic: Pulse during spin
+    setTimeout(() => gameHaptics.spinPulse(), 400);
+    setTimeout(() => gameHaptics.spinPulse(), 800);
 
     // Realistic spinning duration with physics
     const spinDuration = turboMode ? 800 : 2500;
@@ -356,6 +355,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     }
     
     setTimeout(() => {
+      // Haptic: Spin stop
+      gameHaptics.spinStop();
+      
       // Audio: Spin stop
       premiumAudio.playSpinStop();
       
@@ -370,17 +372,20 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
       const result = checkWin(finalReels);
       
       if (result.win) {
+        // Haptic: Win feedback based on amount
+        const winMultiplier = result.amount / bet;
+        gameHaptics.winHaptic(winMultiplier, bet);
+        
         // Audio: Win sounds based on amount
-        const multiplier = result.amount / bet;
-        if (multiplier >= 20) {
-          premiumAudio.playWinFanfare(multiplier);
+        if (winMultiplier >= 20) {
+          premiumAudio.playWinFanfare(winMultiplier);
           premiumAudio.playCoinsCascade(5);
           premiumAudio.intensifyBackgroundMusic();
-        } else if (multiplier >= 5) {
-          premiumAudio.playWinFanfare(multiplier);
+        } else if (winMultiplier >= 5) {
+          premiumAudio.playWinFanfare(winMultiplier);
           premiumAudio.playCoinsCascade(2);
         } else {
-          premiumAudio.playWinFanfare(multiplier);
+          premiumAudio.playWinFanfare(winMultiplier);
           premiumAudio.playCoinsCascade(1);
         }
         
@@ -478,6 +483,8 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   };
 
   const adjustBet = (increment: boolean) => {
+    gameHaptics.buttonClick();
+    
     if (increment && bet < 1000) {
       setBet(prev => Math.min(prev + 50, 1000));
     } else if (!increment && bet > 50) {

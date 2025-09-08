@@ -17,6 +17,7 @@ import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { AudioControlPanel, premiumAudio } from './PremiumAudioSystem';
 import { ParallaxCoinsBackground } from './ParallaxCoinsBackground';
+import { HapticProvider, HapticControls, useGameHaptics } from './HapticSystem';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
   Trophy, Calendar, Users, PlayCircle, Gamepad2, Volume2 
@@ -60,6 +61,9 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
   const [showAudioControls, setShowAudioControls] = useState(false);
+  
+  // Haptic feedback for level ups
+  const gameHaptics = useGameHaptics();
 
   // Audio initialization
   useEffect(() => {
@@ -146,23 +150,34 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   useEffect(() => {
     const newNotifications: string[] = [];
 
-    // Level milestones
-    if (level === 5) newNotifications.push('🎉 Nível 5 alcançado! Novo jogo desbloqueado!');
-    if (level === 10) newNotifications.push('🔥 Nível 10! Fogo da Fênix disponível!');
-    if (level === 15) newNotifications.push('🏰 Nível 15! Palácio Dourado desbloqueado!');
+    // Level milestones with haptic feedback
+    if (level === 5) {
+      newNotifications.push('🎉 Nível 5 alcançado! Novo jogo desbloqueado!');
+      gameHaptics.levelUpHaptic(5);
+    }
+    if (level === 10) {
+      newNotifications.push('🔥 Nível 10! Fogo da Fênix disponível!');
+      gameHaptics.levelUpHaptic(10);
+    }
+    if (level === 15) {
+      newNotifications.push('🏰 Nível 15! Palácio Dourado desbloqueado!');
+      gameHaptics.levelUpHaptic(15);
+    }
 
     // Coin milestones
     if (totalCoinsEarned >= 100000 && totalCoinsEarned < 100500) {
       newNotifications.push('💰 100.000 moedas ganhas! Você é um verdadeiro magnata!');
+      gameHaptics.success();
     }
 
     // Spin milestones
     if (totalSpins >= 100 && totalSpins < 105) {
       newNotifications.push('🎰 100 giros completados! Mestre dos slots!');
+      gameHaptics.success();
     }
 
     setNotifications(newNotifications);
-  }, [level, totalCoinsEarned, totalSpins]);
+  }, [level, totalCoinsEarned, totalSpins, gameHaptics]);
 
   const handleMissionReward = (coins: number, xp: number) => {
     onCoinsChange(coins + coins);
@@ -191,10 +206,14 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
   const handlePlayGame = (gameId: string) => {
     if (energy < 1) {
+      gameHaptics.error();
       toast.error('⚡ Energia insuficiente!');
       return;
     }
+    
+    gameHaptics.buttonClick();
     setActiveGame(gameId);
+    gameHaptics.success();
     toast.success(`🎮 ${games.find(g => g.id === gameId)?.name} carregado!`);
   };
 
@@ -258,8 +277,9 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   );
 
   return (
-    <SpriteSystem>
-      <div className="min-h-screen bg-gradient-background p-4">
+    <HapticProvider>
+      <SpriteSystem>
+        <div className="min-h-screen bg-gradient-background p-4">
       {/* Header with Stats */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -324,11 +344,14 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
         {/* Audio Control Panel */}
         {showAudioControls && (
-          <div className="mb-6 flex justify-center">
+          <div className="mb-6 flex justify-center space-x-6">
             <AudioControlPanel 
               audioEngine={premiumAudio}
               className="w-full max-w-md"
             />
+            <div className="flex items-center">
+              <HapticControls />
+            </div>
           </div>
         )}
 
@@ -528,5 +551,6 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
       </div>
       </div>
     </SpriteSystem>
+    </HapticProvider>
   );
 };
