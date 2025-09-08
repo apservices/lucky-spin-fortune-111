@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { AdvancedParticleSystem } from './AdvancedParticleSystem';
 
 interface Particle {
   id: number;
@@ -19,6 +20,8 @@ interface ParticleSystemProps {
   intensity?: number;
   centerX?: number;
   centerY?: number;
+  width?: number;
+  height?: number;
 }
 
 export const ParticleSystem: React.FC<ParticleSystemProps> = ({
@@ -27,6 +30,8 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
   intensity = 1,
   centerX = 50,
   centerY = 50,
+  width = 800,
+  height = 600,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [particles, setParticles] = useState<Particle[]>([]);
@@ -226,14 +231,35 @@ export const ParticleSystem: React.FC<ParticleSystemProps> = ({
     particles.forEach(particle => drawParticle(ctx, particle));
   }, [particles]);
 
+  // Map legacy types to new system
+  const advancedType = type === 'win' ? 'victory_stars' 
+    : type === 'jackpot' ? 'jackpot_explosion'
+    : type === 'coin_burst' ? 'coin_burst'
+    : 'coin_burst';
+
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-10"
-      style={{ 
-        width: '100%', 
-        height: '100%',
-      }}
-    />
+    <>
+      {/* Legacy fallback canvas */}
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0 w-full h-full pointer-events-none z-10"
+        style={{ 
+          width: '100%', 
+          height: '100%',
+          opacity: 0.5, // Reduce opacity for blending
+        }}
+      />
+      
+      {/* New advanced particle system */}
+      <AdvancedParticleSystem
+        trigger={trigger}
+        type={advancedType}
+        intensity={intensity}
+        centerX={(centerX / 100) * width}
+        centerY={(centerY / 100) * height}
+        width={width}
+        height={height}
+      />
+    </>
   );
 };
