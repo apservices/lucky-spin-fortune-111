@@ -205,12 +205,16 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const canPlayGame = (gameMinLevel: number) => level >= gameMinLevel;
 
   const handlePlayGame = (gameId: string) => {
+    console.log('🕹️ Tentando carregar jogo:', gameId);
+    
     if (energy < 1) {
+      console.log('❌ Energia insuficiente');
       gameHaptics.error();
       toast.error('⚡ Energia insuficiente!');
       return;
     }
     
+    console.log('✅ Carregando jogo:', gameId);
     gameHaptics.buttonClick();
     setActiveGame(gameId);
     gameHaptics.success();
@@ -262,7 +266,10 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
           <Button
             disabled={!canPlayGame(game.minLevel) || energy < 1}
-            onClick={() => handlePlayGame(game.id)}
+            onClick={() => {
+              console.log('🎯 Clique no botão do jogo:', game.id);
+              handlePlayGame(game.id);
+            }}
             className={`${game.featured 
               ? 'bg-gradient-gold hover:scale-105 text-fortune-dark' 
               : ''

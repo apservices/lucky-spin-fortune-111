@@ -137,7 +137,27 @@ export const useHaptic = (): HapticContextType => {
 
 // Advanced haptic hook with game-specific methods
 export const useGameHaptics = () => {
-  const { triggerHaptic, isEnabled } = useHaptic();
+  const context = useContext(HapticContext);
+  
+  // Fallback if not in HapticProvider context
+  if (!context) {
+    console.warn('useGameHaptics called outside of HapticProvider, using fallback');
+    return {
+      isEnabled: false,
+      spinStart: () => {},
+      spinPulse: () => {},
+      spinStop: () => {},
+      winHaptic: () => {},
+      multiplierHaptic: () => {},
+      bonusHaptic: () => {},
+      levelUpHaptic: () => {},
+      buttonClick: () => {},
+      error: () => {},
+      success: () => {}
+    };
+  }
+
+  const { triggerHaptic, isEnabled } = context;
 
   return {
     isEnabled,

@@ -145,6 +145,7 @@ const Index = () => {
   };
 
   const startGame = () => {
+    console.log('🎮 Iniciando jogo...');
     setGameStarted(true);
     toast.success(
       '🎰 Bem-vindo ao Lucky Spin Fortune! Gire a roleta e ganhe moedas!',
