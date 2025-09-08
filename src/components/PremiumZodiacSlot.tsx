@@ -602,12 +602,15 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
                         : undefined
                     }}
                   >
-                    <SpriteComponent 
-                      symbol={symbols.find(s => s.id === symbol.id) || symbols[0]}
-                      isWinning={showWin && rowIndex === 1}
-                      size="lg"
-                      className="w-full h-full"
-                    />
+                     <SpriteComponent 
+                       symbol={symbols.find(s => s.id === symbol.id) || symbols[0]}
+                       isWinning={showWin && rowIndex === 1}
+                       isSpinning={isSpinning}
+                       isJackpot={showWin && lastWin >= bet * 20 && rowIndex === 1}
+                       winMultiplier={multiplier}
+                       size="lg"
+                       className="w-full h-full"
+                     />
                     
                     {/* Premium glow effect */}
                     <div className={`absolute inset-0 bg-gradient-radial from-current/30 to-transparent rounded-2xl ${

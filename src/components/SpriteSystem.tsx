@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLazySpriteLoader } from '@/hooks/useLazySpriteLoader';
+import { AdvancedSpriteAnimation, type AnimationState } from './AdvancedSpriteAnimation';
 
 // Import all sprite assets
 import tigerIdle from '@/assets/sprites/tiger-idle.webp';
@@ -85,27 +86,35 @@ export const SYMBOL_SPRITES: SpriteSymbol[] = [
 interface SpriteComponentProps {
   symbol: SpriteSymbol;
   isWinning?: boolean;
+  isSpinning?: boolean;
+  isJackpot?: boolean;
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  winMultiplier?: number;
 }
 
 export const SpriteComponent = ({ 
   symbol, 
-  isWinning = false, 
+  isWinning = false,
+  isSpinning = false,
+  isJackpot = false,
   size = 'md',
-  className = '' 
+  className = '',
+  winMultiplier = 1
 }: SpriteComponentProps) => {
   const { loadedSprites, loadSprite } = useLazySpriteLoader();
   const [imageError, setImageError] = useState(false);
 
-  const spriteUrl = isWinning ? symbol.winSprite : symbol.idleSprite;
-  const spriteKey = `${symbol.id}-${isWinning ? 'win' : 'idle'}`;
-
-  const sizeClasses = {
-    sm: 'w-12 h-12',
-    md: 'w-16 h-16',
-    lg: 'w-24 h-24'
-  };
+  // Determine sprite URL and animation state
+  const spriteUrl = (isWinning || isJackpot) ? symbol.winSprite : symbol.idleSprite;
+  const spriteKey = `${symbol.id}-${(isWinning || isJackpot) ? 'win' : 'idle'}`;
+  
+  // Determine animation state priority: jackpot > spinning > winning > idle
+  const animationState: AnimationState = 
+    isJackpot ? 'jackpot' :
+    isSpinning ? 'spinning' :
+    isWinning ? 'win' :
+    'idle';
 
   useEffect(() => {
     loadSprite(spriteKey, spriteUrl).catch(() => {
@@ -117,31 +126,15 @@ export const SpriteComponent = ({
   const isLoaded = spriteState?.loaded && !imageError;
 
   return (
-    <div className={`${sizeClasses[size]} ${className} relative overflow-hidden`}>
-      {isLoaded ? (
-        <img
-          src={spriteUrl}
-          alt={symbol.name}
-          className={`w-full h-full object-cover transition-all duration-300 ${
-            isWinning ? 'animate-pulse scale-110' : 'hover:scale-105'
-          }`}
-          draggable={false}
-        />
-      ) : (
-        <div className={`w-full h-full bg-gradient-to-br ${symbol.color} animate-pulse rounded-lg flex items-center justify-center`}>
-          <div className="text-white text-xs font-bold text-center px-1">
-            {symbol.name.split(' ')[0]}
-          </div>
-        </div>
-      )}
-      
-      {isWinning && isLoaded && (
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-r from-yellow-300/30 via-white/40 to-yellow-300/30 animate-pulse" />
-          <div className="absolute -inset-2 bg-yellow-400/20 blur-lg animate-pulse" />
-        </div>
-      )}
-    </div>
+    <AdvancedSpriteAnimation
+      symbol={symbol}
+      state={animationState}
+      size={size}
+      className={className}
+      spriteUrl={spriteUrl}
+      isLoaded={isLoaded}
+      winMultiplier={winMultiplier}
+    />
   );
 };
 
