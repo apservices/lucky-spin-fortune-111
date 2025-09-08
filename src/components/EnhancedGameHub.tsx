@@ -16,7 +16,8 @@ import { DailyRewards } from './DailyRewards';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { OptimizedParticleSystem } from './OptimizedParticleSystem';
-import { optimizedAudio, OptimizedAudioSystem } from './OptimizedAudioSystem';
+import { optimizedAudio } from './OptimizedAudioSystem';
+import { MinimalAudioControl } from './MinimalAudioControl';
 import { HapticProvider, useGameHaptics } from './HapticSystem';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
@@ -60,7 +61,6 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
-  const [showAudioControls, setShowAudioControls] = useState(false);
   
   // Haptic feedback for level ups
   const gameHaptics = useGameHaptics();
@@ -269,6 +269,8 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   return (
     <HapticProvider>
       <div className="min-h-screen bg-gradient-background p-4">
+        {/* Minimal Audio Control */}
+        <MinimalAudioControl />
       {/* Header with Stats */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -309,34 +311,18 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           </Card>
 
           <Card className="p-4 bg-gradient-to-r from-accent/20 to-primary/20 border border-accent">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <Trophy className="w-8 h-8 text-accent" />
-                <div>
-                  <div className="text-2xl font-bold text-accent">
-                    {totalSpins}
-                  </div>
-                  <div className="text-sm text-muted-foreground">Total Giros</div>
+            <div className="flex items-center space-x-3">
+              <Trophy className="w-8 h-8 text-accent" />
+              <div>
+                <div className="text-2xl font-bold text-accent">
+                  {totalSpins}
                 </div>
+                <div className="text-sm text-muted-foreground">Total Giros</div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowAudioControls(!showAudioControls)}
-                className="text-pgbet-gold hover:bg-pgbet-gold/20"
-              >
-                <Volume2 className="w-5 h-5" />
-              </Button>
             </div>
           </Card>
         </div>
 
-        {/* Optimized Audio Control Panel */}
-        {showAudioControls && (
-          <div className="mb-6 flex justify-center">
-            <OptimizedAudioSystem />
-          </div>
-        )}
 
         {/* Experience Bar */}
         <Card className="p-4 mb-6">

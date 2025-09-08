@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { EnhancedGameHub } from '@/components/EnhancedGameHub';
-import { FloatingCoinsBackground } from '@/components/FloatingCoinsBackground';
 import { GameStats } from '@/components/GameStats';
 import { GameHeader } from '@/components/GameHeader';
 import { DailyRewards } from '@/components/DailyRewards';
