@@ -162,8 +162,8 @@ const Index = () => {
   if (!gameStarted) {
     return (
       <div className="min-h-screen bg-gradient-background flex items-center justify-center p-4 relative">
-        <FloatingCoinsBackground />
-        <Card className="max-w-md w-full p-8 text-center bg-card/80 backdrop-blur-md border-2 border-pgbet-gold shadow-2xl relative z-10">
+        {/* Removed heavy background for better performance */}
+        <Card className="max-w-md w-full p-8 text-center bg-card/80 backdrop-blur-sm border-2 border-pgbet-gold shadow-xl relative z-10">
           <div className="space-y-6">
             <div className="space-y-2">
               <h1 className="text-4xl font-bold bg-pgbet-gradient-gold bg-clip-text text-transparent">
@@ -212,7 +212,7 @@ const Index = () => {
 
   return (
     <div className="relative">
-      <FloatingCoinsBackground />
+      {/* Removed heavy floating background for performance */}
       <EnhancedGameHub
         coins={coins}
         energy={energy}

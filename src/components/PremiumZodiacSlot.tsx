@@ -26,7 +26,8 @@ import { MascotSystem } from './MascotSystem';
 import { ThemeSystem, GameTheme, themes, type ThemeConfig } from './ThemeSystem';
 import { AudioSystem, gameAudio } from './AudioSystem';
 import { SpriteComponent, SpriteSystem, SYMBOL_SPRITES, type SpriteSymbol } from './SpriteSystem';
-import { premiumAudio } from './PremiumAudioSystem';
+import { OptimizedParticleSystem } from './OptimizedParticleSystem';
+import { optimizedAudio, OptimizedAudioSystem } from './OptimizedAudioSystem';
 import { useGameHaptics } from './HapticSystem';
 
 interface PremiumZodiacSlotProps {
@@ -99,14 +100,14 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const [currentTheme, setCurrentTheme] = useState<GameTheme>('classic');
   const [showThemeSelector, setShowThemeSelector] = useState(false);
   const [particleTrigger, setParticleTrigger] = useState(0);
-  const [particleType, setParticleType] = useState<'win' | 'jackpot' | 'coin_burst' | 'dragon_fire'>('win');
+  const [particleType, setParticleType] = useState<'win' | 'jackpot' | 'coin_burst'>('win');
   const [mascotMood, setMascotMood] = useState<'idle' | 'excited' | 'celebrating' | 'sleeping' | 'magical'>('idle');
   const [currentWinningSymbol, setCurrentWinningSymbol] = useState<string>('');
   
   const slotRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   
-  // Advanced Haptic System
+  // Advanced Haptic System (with fallback)
   const gameHaptics = useGameHaptics();
 
   // Generate floating background coins
@@ -257,22 +258,22 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const playSound = useCallback((type: string) => {
     if (!soundEnabled) return;
     
-    // Use advanced audio system
+    // Use optimized audio system
     switch (type) {
       case 'spin':
-        gameAudio.playSpinSound();
+        optimizedAudio.playSpinStart();
         break;
       case 'win':
-        gameAudio.playWinSound(multiplier);
+        optimizedAudio.playWinSound(multiplier);
         break;
       case 'bigwin':
-        gameAudio.playWinSound(multiplier * 2);
+        optimizedAudio.playWinSound(multiplier * 2);
         break;
       case 'jackpot':
-        gameAudio.playJackpotSound();
+        optimizedAudio.playJackpotSound();
         break;
       case 'coin':
-        gameAudio.playCoinSound();
+        optimizedAudio.playCoinSound();
         break;
     }
   }, [soundEnabled, multiplier]);
@@ -300,7 +301,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     }
   }, [achievements, bet]);
 
-  const spin = async () => {
+  const spin = useCallback(async () => {
     if (energy < 1) {
       toast.error('⚡ Energia insuficiente! Aguarde a recarga.');
       return;
@@ -314,11 +315,11 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     setIsSpinning(true);
     setShowWin(false);
     
-    // Haptic: Spin start
+    // Haptic feedback
     gameHaptics.spinStart();
     
-    // Audio: Spin start
-    await premiumAudio.playSpinStart();
+    // Audio feedback
+    optimizedAudio.playSpinStart();
     
     // Consume energy and bet
     onEnergyChange(energy - 1);
@@ -326,40 +327,22 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     
     const newTotalSpins = totalSpins + 1;
     setTotalSpins(newTotalSpins);
-    
-    playSound('spin');
 
-    // Audio: Whoosh during spin
-    setTimeout(() => premiumAudio.playSpinWhoosh(), 200);
+    // Simplified spin duration for performance
+    const spinDuration = turboMode ? 600 : 1500;
     
-    // Haptic: Pulse during spin
-    setTimeout(() => gameHaptics.spinPulse(), 400);
-    setTimeout(() => gameHaptics.spinPulse(), 800);
-
-    // Realistic spinning duration with physics
-    const spinDuration = turboMode ? 800 : 2500;
+    // Audio during spin
+    setTimeout(() => optimizedAudio.playSpinWhoosh(), 100);
     
-    // Create spinning effect with multiple phases
-    const spinPhases = turboMode ? 3 : 6;
-    const phaseInterval = spinDuration / spinPhases;
-    
-    for (let phase = 0; phase < spinPhases; phase++) {
-      setTimeout(() => {
-        const tempReels = [
-          [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()],
-          [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()],
-          [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()]
-        ];
-        setReels(tempReels);
-      }, phase * phaseInterval);
+    // Haptic pulse (less frequent)
+    if (!turboMode) {
+      setTimeout(() => gameHaptics.spinPulse(), 300);
     }
     
     setTimeout(() => {
-      // Haptic: Spin stop
+      // Stop haptic and audio
       gameHaptics.spinStop();
-      
-      // Audio: Spin stop
-      premiumAudio.playSpinStop();
+      optimizedAudio.playSpinStop();
       
       const finalReels = [
         [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()],
@@ -372,34 +355,16 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
       const result = checkWin(finalReels);
       
       if (result.win) {
-        // Haptic: Win feedback based on amount
+        // Haptic feedback based on win amount
         const winMultiplier = result.amount / bet;
         gameHaptics.winHaptic(winMultiplier, bet);
         
-        // Audio: Win sounds based on amount
-        if (winMultiplier >= 20) {
-          premiumAudio.playWinFanfare(winMultiplier);
-          premiumAudio.playCoinsCascade(5);
-          premiumAudio.intensifyBackgroundMusic();
-        } else if (winMultiplier >= 5) {
-          premiumAudio.playWinFanfare(winMultiplier);
-          premiumAudio.playCoinsCascade(2);
-        } else {
-          premiumAudio.playWinFanfare(winMultiplier);
-          premiumAudio.playCoinsCascade(1);
-        }
-        
-        // Audio: Symbol sound
-        if (result.symbol) {
-          premiumAudio.playSymbolSound(result.symbol.id);
-        }
+        // Audio feedback
+        optimizedAudio.playWinSound(winMultiplier);
         
         setLastWin(result.amount);
         setShowWin(true);
         setWinStreak(prev => prev + 1);
-        
-        // Set winning symbol for mascot animation
-        setCurrentWinningSymbol(result.symbol?.id || '');
         
         // Update coins with winnings
         onCoinsChange(coins - bet + result.amount);
@@ -408,61 +373,17 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         const expGain = Math.floor(result.amount / 10);
         onExperienceChange(experience + expGain);
         
-        // Create win particles and trigger advanced effects
-        if (slotRef.current) {
-          const rect = slotRef.current.getBoundingClientRect();
-          createWinParticles(
-            rect.width / 2,
-            rect.height / 2,
-            result.symbol?.id || '💰',
-            result.symbol?.color || 'text-pgbet-gold'
-          );
-        }
+        // Trigger particles (lightweight)
+        setParticleType(result.amount >= bet * 20 ? 'jackpot' : result.amount >= bet * 5 ? 'coin_burst' : 'win');
+        setParticleTrigger(prev => prev + 1);
         
-        // Determine win type and play appropriate sound
+        // Show toast
         if (result.amount >= bet * 20) {
-          playSound('jackpot');
-          setMascotMood('magical');
-          setParticleType('jackpot');
-          setParticleTrigger(prev => prev + 1);
-          gameAudio.playMascotSound(result.symbol?.id || '');
-          toast.success(
-            `🎰 MEGA JACKPOT! ${result.symbol?.name}! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
-            {
-              duration: 6000,
-              style: {
-                background: 'linear-gradient(135deg, hsl(45 100% 50%), hsl(0 85% 50%))',
-                color: 'hsl(0 0% 0%)',
-                border: '3px solid hsl(45 100% 70%)',
-                fontWeight: 'bold',
-                fontSize: '16px'
-              }
-            }
-          );
+          toast.success(`🎰 JACKPOT! +${result.amount} moedas!`, { duration: 3000 });
         } else if (result.amount >= bet * 5) {
-          playSound('bigwin');
-          setMascotMood('celebrating');
-          setParticleType('coin_burst');
-          setParticleTrigger(prev => prev + 1);
-          gameAudio.playMascotSound(result.symbol?.id || '');
-          toast.success(
-            `🎉 Grande Vitória! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
-            {
-              duration: 3000,
-              style: {
-                background: 'linear-gradient(135deg, hsl(45 100% 50%), hsl(142 86% 45%))',
-                color: 'hsl(0 0% 0%)',
-                border: '2px solid hsl(45 100% 70%)',
-                fontWeight: 'bold'
-              }
-            }
-          );
+          toast.success(`🎉 Grande Vitória! +${result.amount} moedas!`, { duration: 2000 });
         } else {
-          playSound('win');
-          setMascotMood('excited');
-          setParticleType('win');
-          setParticleTrigger(prev => prev + 1);
-          toast.success(`✨ Vitória! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`);
+          toast.success(`✨ Vitória! +${result.amount} moedas!`);
         }
         
         checkAchievements(newTotalSpins, winStreak + 1, result.amount);
@@ -470,19 +391,16 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         // Hide win animation
         setTimeout(() => {
           setShowWin(false);
-          setMascotMood('idle');
-        }, result.isJackpot ? 4000 : 2500);
+        }, result.amount >= bet * 20 ? 3000 : 2000);
       } else {
         setWinStreak(0);
-        setMascotMood('idle');
-        playSound('spin_end');
       }
       
       setIsSpinning(false);
     }, spinDuration);
-  };
+  }, [energy, coins, bet, turboMode, gameHaptics, onEnergyChange, onCoinsChange, totalSpins, getRandomSymbol, checkWin, onExperienceChange, experience, checkAchievements, winStreak]);
 
-  const adjustBet = (increment: boolean) => {
+  const adjustBet = useCallback((increment: boolean) => {
     gameHaptics.buttonClick();
     
     if (increment && bet < 1000) {
@@ -490,21 +408,23 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     } else if (!increment && bet > 50) {
       setBet(prev => Math.max(prev - 50, 50));
     }
-  };
+  }, [gameHaptics, bet]);
 
   return (
     <div className="relative w-full max-w-md mx-auto min-h-screen">
-      {/* Advanced Audio System */}
-      <AudioSystem soundEnabled={soundEnabled} />
+      {/* Optimized Audio System */}
+      <OptimizedAudioSystem soundEnabled={soundEnabled} />
       
-      {/* Advanced Particle System */}
-      <ParticleSystem 
-        trigger={particleTrigger}
-        type={particleType}
-        intensity={lastWin >= bet * 20 ? 3 : lastWin >= bet * 5 ? 2 : 1}
-        centerX={50}
-        centerY={40}
-      />
+      {/* Lightweight Particle System - only when winning */}
+      {showWin && (
+        <OptimizedParticleSystem 
+          trigger={particleTrigger}
+          type={particleType}
+          intensity={1}
+          centerX={50}
+          centerY={40}
+        />
+      )}
       
       {/* Floating Coins Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">

@@ -15,9 +15,9 @@ import { GameStats } from './GameStats';
 import { DailyRewards } from './DailyRewards';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
-import { AudioControlPanel, premiumAudio } from './PremiumAudioSystem';
-import { ParallaxCoinsBackground } from './ParallaxCoinsBackground';
-import { HapticProvider, HapticControls, useGameHaptics } from './HapticSystem';
+import { OptimizedParticleSystem } from './OptimizedParticleSystem';
+import { optimizedAudio, OptimizedAudioSystem } from './OptimizedAudioSystem';
+import { HapticProvider, useGameHaptics } from './HapticSystem';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
   Trophy, Calendar, Users, PlayCircle, Gamepad2, Volume2 
@@ -65,27 +65,10 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   // Haptic feedback for level ups
   const gameHaptics = useGameHaptics();
 
-  // Audio initialization
+  // Audio initialization (optimized)
   useEffect(() => {
-    const initAudio = async () => {
-      await premiumAudio.startBackgroundMusic();
-    };
-    
-    // Start background music after user interaction
-    const handleFirstInteraction = () => {
-      initAudio();
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('keydown', handleFirstInteraction);
-    };
-
-    document.addEventListener('click', handleFirstInteraction);
-    document.addEventListener('keydown', handleFirstInteraction);
-
-    return () => {
-      document.removeEventListener('click', handleFirstInteraction);
-      document.removeEventListener('keydown', handleFirstInteraction);
-      premiumAudio.stopBackgroundMusic();
-    };
+    // No complex audio initialization needed for optimized system
+    optimizedAudio.setEnabled(true);
   }, []);
 
   // Available games
@@ -285,8 +268,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
   return (
     <HapticProvider>
-      <SpriteSystem>
-        <div className="min-h-screen bg-gradient-background p-4">
+      <div className="min-h-screen bg-gradient-background p-4">
       {/* Header with Stats */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -349,16 +331,10 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           </Card>
         </div>
 
-        {/* Audio Control Panel */}
+        {/* Optimized Audio Control Panel */}
         {showAudioControls && (
-          <div className="mb-6 flex justify-center space-x-6">
-            <AudioControlPanel 
-              audioEngine={premiumAudio}
-              className="w-full max-w-md"
-            />
-            <div className="flex items-center">
-              <HapticControls />
-            </div>
+          <div className="mb-6 flex justify-center">
+            <OptimizedAudioSystem />
           </div>
         )}
 
@@ -434,18 +410,17 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
               </div>
             </div>
 
-            {/* Game Area with Background */}
-            <div className="mt-8 relative">
-              <ParallaxCoinsBackground />
-              <Card className="relative z-10 p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
-                <div className="text-center mb-4">
-                  <h3 className="text-xl font-bold text-pgbet-gold">
-                    🎮 {games.find(g => g.id === activeGame)?.name || 'Zodiac Fortune Slots'}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    {games.find(g => g.id === activeGame)?.description || 'Gire e ganhe fortunas!'}
-                  </p>
-                </div>
+      {/* Simplified Game Area */}
+      <div className="mt-8">
+        <Card className="p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
+          <div className="text-center mb-4">
+            <h3 className="text-xl font-bold text-pgbet-gold">
+              🎮 {games.find(g => g.id === activeGame)?.name || 'Zodiac Fortune Slots'}
+            </h3>
+            <p className="text-sm text-gray-400">
+              {games.find(g => g.id === activeGame)?.description || 'Gire e ganhe fortunas!'}
+            </p>
+          </div>
                 
                 {activeGame === 'fortune-tiger' && (
                   <PremiumZodiacSlot
@@ -547,17 +522,13 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
         </Tabs>
       </div>
 
-      {/* Dragon Mascot */}
-      <div className="fixed bottom-4 right-4">
-        <DragonMascot 
-          mood={lastWin > 1000 ? 'celebrating' : energy === 0 ? 'sleepy' : 'happy'}
-          isSpinning={false}
-          lastWin={lastWin}
-          energy={energy}
-        />
+      {/* Simple Mascot - reduced complexity */}
+      <div className="fixed bottom-4 right-4 z-40">
+        <div className="w-16 h-16 bg-gradient-to-br from-pgbet-gold to-pgbet-red rounded-full flex items-center justify-center text-2xl animate-bounce">
+          🐯
+        </div>
       </div>
       </div>
-    </SpriteSystem>
     </HapticProvider>
   );
 };
