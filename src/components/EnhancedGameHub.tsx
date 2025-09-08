@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { WheelGame } from './WheelGame';
 import { SlotMachine } from './SlotMachine';
 import { FortuneTigerSlot } from './FortuneTigerSlot';
-import { ZodiacFortuneSlot } from './ZodiacFortuneSlot';
+import { PremiumZodiacSlot } from './PremiumZodiacSlot';
 import { MissionsSystem } from './MissionsSystem';
 import { CollectiblesSystem } from './CollectiblesSystem';
 import { VIPSystem } from './VIPSystem';
@@ -369,11 +369,14 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
                 </div>
                 
                 {activeGame === 'fortune-tiger' && (
-                  <ZodiacFortuneSlot
+                  <PremiumZodiacSlot
                     coins={coins}
                     energy={energy}
+                    level={level}
+                    experience={experience}
                     onCoinsChange={onCoinsChange}
                     onEnergyChange={onEnergyChange}
+                    onExperienceChange={onExperienceChange}
                   />
                 )}
                 

@@ -168,6 +168,54 @@ export default {
 					'0%': { transform: 'translateY(0px) rotate(0deg)', opacity: '0.2' },
 					'50%': { transform: 'translateY(-30px) rotate(180deg)', opacity: '0.4' },
 					'100%': { transform: 'translateY(0px) rotate(360deg)', opacity: '0.2' }
+				},
+				'pgbet-premium-spin': {
+					'0%': { 
+						transform: 'perspective(2000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)',
+						filter: 'blur(0px) brightness(1)'
+					},
+					'20%': { 
+						transform: 'perspective(2000px) rotateX(20deg) rotateY(5deg) translateZ(20px) scale(1.05)',
+						filter: 'blur(1px) brightness(1.2)'
+					},
+					'40%': { 
+						transform: 'perspective(2000px) rotateX(-10deg) rotateY(-5deg) translateZ(10px) scale(1.1)',
+						filter: 'blur(2px) brightness(1.4)'
+					},
+					'60%': { 
+						transform: 'perspective(2000px) rotateX(15deg) rotateY(10deg) translateZ(15px) scale(1.08)',
+						filter: 'blur(1.5px) brightness(1.3)'
+					},
+					'80%': { 
+						transform: 'perspective(2000px) rotateX(-5deg) rotateY(-3deg) translateZ(5px) scale(1.02)',
+						filter: 'blur(0.5px) brightness(1.1)'
+					},
+					'100%': { 
+						transform: 'perspective(2000px) rotateX(0deg) rotateY(0deg) translateZ(0px) scale(1)',
+						filter: 'blur(0px) brightness(1)'
+					}
+				},
+				'pgbet-symbol-win': {
+					'0%': { 
+						transform: 'scale(1) rotate(0deg)',
+						filter: 'brightness(1) drop-shadow(0 0 5px currentColor)'
+					},
+					'25%': { 
+						transform: 'scale(1.2) rotate(5deg)',
+						filter: 'brightness(1.5) drop-shadow(0 0 20px currentColor)'
+					},
+					'50%': { 
+						transform: 'scale(1.3) rotate(-5deg)',
+						filter: 'brightness(2) drop-shadow(0 0 30px currentColor)'
+					},
+					'75%': { 
+						transform: 'scale(1.2) rotate(5deg)',
+						filter: 'brightness(1.5) drop-shadow(0 0 20px currentColor)'
+					},
+					'100%': { 
+						transform: 'scale(1) rotate(0deg)',
+						filter: 'brightness(1) drop-shadow(0 0 5px currentColor)'
+					}
 				}
 			},
 			animation: {
@@ -184,7 +232,9 @@ export default {
 				'pgbet-reel-spin': 'pgbet-reel-spin 0.1s ease-in-out infinite',
 				'pgbet-win-pulse': 'pgbet-win-pulse 1s ease-in-out infinite',
 				'pgbet-glow': 'pgbet-glow 2s ease-in-out infinite',
-				'pgbet-coin-float': 'pgbet-coin-float 6s ease-in-out infinite'
+				'pgbet-coin-float': 'pgbet-coin-float 6s ease-in-out infinite',
+				'pgbet-premium-spin': 'pgbet-premium-spin 0.15s ease-in-out infinite',
+				'pgbet-symbol-win': 'pgbet-symbol-win 1s ease-in-out infinite'
 			},
 			backgroundImage: {
 				'gradient-gold': 'var(--gradient-gold)',
