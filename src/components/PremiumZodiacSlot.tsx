@@ -3,8 +3,28 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Zap, Coins, Crown, Star, Volume2, VolumeX, Settings, Trophy, Target } from 'lucide-react';
+import { 
+  Zap, 
+  Coins, 
+  Crown, 
+  Star, 
+  Volume2, 
+  VolumeX, 
+  Settings, 
+  Trophy, 
+  Target,
+  Palette,
+  Play,
+  Pause,
+  Plus,
+  Minus
+} from 'lucide-react';
 import { toast } from 'sonner';
+
+import { ParticleSystem } from './ParticleSystem';
+import { MascotSystem } from './MascotSystem';
+import { ThemeSystem, GameTheme, themes, type ThemeConfig } from './ThemeSystem';
+import { AudioSystem, gameAudio } from './AudioSystem';
 
 interface PremiumZodiacSlotProps {
   coins: number;
@@ -75,6 +95,14 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const [winParticles, setWinParticles] = useState<WinParticle[]>([]);
   const [achievements, setAchievements] = useState<string[]>([]);
   
+  // Advanced Features
+  const [currentTheme, setCurrentTheme] = useState<GameTheme>('classic');
+  const [showThemeSelector, setShowThemeSelector] = useState(false);
+  const [particleTrigger, setParticleTrigger] = useState(0);
+  const [particleType, setParticleType] = useState<'win' | 'jackpot' | 'coin_burst' | 'dragon_fire'>('win');
+  const [mascotMood, setMascotMood] = useState<'idle' | 'excited' | 'celebrating' | 'sleeping' | 'magical'>('idle');
+  const [currentWinningSymbol, setCurrentWinningSymbol] = useState<string>('');
+  
   const slotRef = useRef<HTMLDivElement>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
@@ -108,7 +136,17 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const expToNextLevel = level * 1000;
   const expProgress = (experience % expToNextLevel) / expToNextLevel * 100;
 
+  // Get current theme configuration
+  const getCurrentThemeConfig = (): ThemeConfig => {
+    return themes.find(theme => theme.id === currentTheme) || themes[0];
+  };
+
   const getRandomSymbol = useCallback((): Symbol => {
+    const themeConfig = getCurrentThemeConfig();
+    const themeSymbols = symbols.filter(symbol => 
+      themeConfig.symbolSet.includes(symbol.emoji)
+    );
+    
     const weights = {
       common: 0.55,
       rare: 0.35,
@@ -131,9 +169,11 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
       rarity = 'common';
     }
     
-    const filteredSymbols = symbols.filter(s => s.rarity === rarity);
-    return filteredSymbols[Math.floor(Math.random() * filteredSymbols.length)];
-  }, [level]);
+    const filteredSymbols = themeSymbols.filter(s => s.rarity === rarity);
+    return filteredSymbols.length > 0 
+      ? filteredSymbols[Math.floor(Math.random() * filteredSymbols.length)]
+      : symbols[Math.floor(Math.random() * symbols.length)];
+  }, [level, currentTheme]);
 
   const checkWin = useCallback((newReels: Symbol[][]) => {
     // Check middle row (main line)
@@ -214,24 +254,37 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const playSound = useCallback((type: string) => {
     if (!soundEnabled) return;
     
-    // Placeholder for sound effects
-    console.log(`Playing sound: ${type}`);
-    
-    // Haptic feedback for mobile
-    if ('vibrate' in navigator) {
-      switch (type) {
-        case 'spin':
-          navigator.vibrate(50);
-          break;
-        case 'win':
-          navigator.vibrate([100, 50, 100]);
-          break;
-        case 'jackpot':
-          navigator.vibrate([200, 100, 200, 100, 200]);
-          break;
-      }
+    // Trigger haptic feedback for mobile devices
+    if (navigator.vibrate) {
+      const vibrationPattern: { [key: string]: number[] } = {
+        spin: [50],
+        win: [100, 50, 100],
+        bigwin: [200, 100, 200, 100, 200],
+        jackpot: [300, 100, 300, 100, 300, 100, 300],
+        coin: [30],
+      };
+      navigator.vibrate(vibrationPattern[type] || [50]);
     }
-  }, [soundEnabled]);
+    
+    // Use advanced audio system
+    switch (type) {
+      case 'spin':
+        gameAudio.playSpinSound();
+        break;
+      case 'win':
+        gameAudio.playWinSound(multiplier);
+        break;
+      case 'bigwin':
+        gameAudio.playWinSound(multiplier * 2);
+        break;
+      case 'jackpot':
+        gameAudio.playJackpotSound();
+        break;
+      case 'coin':
+        gameAudio.playCoinSound();
+        break;
+    }
+  }, [soundEnabled, multiplier]);
 
   const checkAchievements = useCallback((spins: number, streak: number, winAmount: number) => {
     const newAchievements: string[] = [];
@@ -313,6 +366,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         setShowWin(true);
         setWinStreak(prev => prev + 1);
         
+        // Set winning symbol for mascot animation
+        setCurrentWinningSymbol(result.symbol?.emoji || '');
+        
         // Update coins with winnings
         onCoinsChange(coins - bet + result.amount);
         
@@ -320,7 +376,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         const expGain = Math.floor(result.amount / 10);
         onExperienceChange(experience + expGain);
         
-        // Create win particles
+        // Create win particles and trigger advanced effects
         if (slotRef.current) {
           const rect = slotRef.current.getBoundingClientRect();
           createWinParticles(
@@ -331,13 +387,15 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
           );
         }
         
-        // Play appropriate sound
-        playSound(result.isJackpot ? 'jackpot' : 'win');
-        
-        // Special jackpot toast
-        if (result.isJackpot) {
+        // Determine win type and play appropriate sound
+        if (result.amount >= bet * 20) {
+          playSound('jackpot');
+          setMascotMood('magical');
+          setParticleType('jackpot');
+          setParticleTrigger(prev => prev + 1);
+          gameAudio.playMascotSound(result.symbol?.emoji || '');
           toast.success(
-            `🎰 JACKPOT! ${result.symbol?.emoji} ${result.symbol?.name}! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
+            `🎰 MEGA JACKPOT! ${result.symbol?.emoji} ${result.symbol?.name}! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
             {
               duration: 6000,
               style: {
@@ -349,9 +407,14 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
               }
             }
           );
-        } else {
+        } else if (result.amount >= bet * 5) {
+          playSound('bigwin');
+          setMascotMood('celebrating');
+          setParticleType('coin_burst');
+          setParticleTrigger(prev => prev + 1);
+          gameAudio.playMascotSound(result.symbol?.emoji || '');
           toast.success(
-            `🎉 VITÓRIA! ${result.symbol?.emoji} +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
+            `🎉 Grande Vitória! ${result.symbol?.emoji} +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
             {
               duration: 3000,
               style: {
@@ -362,14 +425,24 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
               }
             }
           );
+        } else {
+          playSound('win');
+          setMascotMood('excited');
+          setParticleType('win');
+          setParticleTrigger(prev => prev + 1);
+          toast.success(`✨ Vitória! ${result.symbol?.emoji} +${result.amount} moedas! x${result.multiplier.toFixed(1)}`);
         }
         
         checkAchievements(newTotalSpins, winStreak + 1, result.amount);
         
         // Hide win animation
-        setTimeout(() => setShowWin(false), result.isJackpot ? 4000 : 2500);
+        setTimeout(() => {
+          setShowWin(false);
+          setMascotMood('idle');
+        }, result.isJackpot ? 4000 : 2500);
       } else {
         setWinStreak(0);
+        setMascotMood('idle');
         playSound('spin_end');
       }
       
@@ -387,6 +460,18 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
 
   return (
     <div className="relative w-full max-w-md mx-auto min-h-screen">
+      {/* Advanced Audio System */}
+      <AudioSystem soundEnabled={soundEnabled} />
+      
+      {/* Advanced Particle System */}
+      <ParticleSystem 
+        trigger={particleTrigger}
+        type={particleType}
+        intensity={lastWin >= bet * 20 ? 3 : lastWin >= bet * 5 ? 2 : 1}
+        centerX={50}
+        centerY={40}
+      />
+      
       {/* Floating Coins Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         {floatingCoins.map(coin => (
@@ -423,7 +508,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         </div>
       ))}
 
-      <Card className="relative z-10 p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-4 border-pgbet-gold shadow-2xl animate-pgbet-machine-glow">
+      <Card className={`relative z-10 p-6 ${getCurrentThemeConfig().bgClass} border-4 border-pgbet-gold shadow-2xl animate-pgbet-machine-glow`}>
         {/* Header with Level & XP */}
         <div className="text-center mb-4">
           <div className="flex items-center justify-between mb-2">
@@ -431,7 +516,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
               Nível {level}
             </Badge>
             <h2 className="text-2xl font-bold bg-pgbet-gradient-gold bg-clip-text text-transparent">
-              🐯 Zodiac Fortune Premium 🐯
+              {getCurrentThemeConfig().preview} {getCurrentThemeConfig().name} {getCurrentThemeConfig().preview}
             </h2>
             <Badge className="bg-pgbet-emerald text-white">
               VIP
