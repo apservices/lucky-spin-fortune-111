@@ -26,6 +26,7 @@ import { MascotSystem } from './MascotSystem';
 import { ThemeSystem, GameTheme, themes, type ThemeConfig } from './ThemeSystem';
 import { AudioSystem, gameAudio } from './AudioSystem';
 import { SpriteComponent, SpriteSystem, SYMBOL_SPRITES, type SpriteSymbol } from './SpriteSystem';
+import { premiumAudio } from './PremiumAudioSystem';
 
 interface PremiumZodiacSlotProps {
   coins: number;
@@ -321,6 +322,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     setIsSpinning(true);
     setShowWin(false);
     
+    // Audio: Spin start
+    await premiumAudio.playSpinStart();
+    
     // Consume energy and bet
     onEnergyChange(energy - 1);
     onCoinsChange(coins - bet);
@@ -329,6 +333,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     setTotalSpins(newTotalSpins);
     
     playSound('spin');
+
+    // Audio: Whoosh during spin
+    setTimeout(() => premiumAudio.playSpinWhoosh(), 200);
 
     // Realistic spinning duration with physics
     const spinDuration = turboMode ? 800 : 2500;
@@ -349,6 +356,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     }
     
     setTimeout(() => {
+      // Audio: Spin stop
+      premiumAudio.playSpinStop();
+      
       const finalReels = [
         [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()],
         [getRandomSymbol(), getRandomSymbol(), getRandomSymbol()],
@@ -360,6 +370,25 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
       const result = checkWin(finalReels);
       
       if (result.win) {
+        // Audio: Win sounds based on amount
+        const multiplier = result.amount / bet;
+        if (multiplier >= 20) {
+          premiumAudio.playWinFanfare(multiplier);
+          premiumAudio.playCoinsCascade(5);
+          premiumAudio.intensifyBackgroundMusic();
+        } else if (multiplier >= 5) {
+          premiumAudio.playWinFanfare(multiplier);
+          premiumAudio.playCoinsCascade(2);
+        } else {
+          premiumAudio.playWinFanfare(multiplier);
+          premiumAudio.playCoinsCascade(1);
+        }
+        
+        // Audio: Symbol sound
+        if (result.symbol) {
+          premiumAudio.playSymbolSound(result.symbol.id);
+        }
+        
         setLastWin(result.amount);
         setShowWin(true);
         setWinStreak(prev => prev + 1);

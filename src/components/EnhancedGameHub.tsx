@@ -15,9 +15,11 @@ import { GameStats } from './GameStats';
 import { DailyRewards } from './DailyRewards';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
+import { AudioControlPanel, premiumAudio } from './PremiumAudioSystem';
+import { ParallaxCoinsBackground } from './ParallaxCoinsBackground';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
-  Trophy, Calendar, Users, PlayCircle, Gamepad2 
+  Trophy, Calendar, Users, PlayCircle, Gamepad2, Volume2 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -57,6 +59,30 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
+  const [showAudioControls, setShowAudioControls] = useState(false);
+
+  // Audio initialization
+  useEffect(() => {
+    const initAudio = async () => {
+      await premiumAudio.startBackgroundMusic();
+    };
+    
+    // Start background music after user interaction
+    const handleFirstInteraction = () => {
+      initAudio();
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('keydown', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('keydown', handleFirstInteraction);
+      premiumAudio.stopBackgroundMusic();
+    };
+  }, []);
 
   // Available games
   const games = [
@@ -274,17 +300,37 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           </Card>
 
           <Card className="p-4 bg-gradient-to-r from-accent/20 to-primary/20 border border-accent">
-            <div className="flex items-center space-x-3">
-              <Trophy className="w-8 h-8 text-accent" />
-              <div>
-                <div className="text-2xl font-bold text-accent">
-                  {totalSpins}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <Trophy className="w-8 h-8 text-accent" />
+                <div>
+                  <div className="text-2xl font-bold text-accent">
+                    {totalSpins}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Total Giros</div>
                 </div>
-                <div className="text-sm text-muted-foreground">Total Giros</div>
               </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowAudioControls(!showAudioControls)}
+                className="text-pgbet-gold hover:bg-pgbet-gold/20"
+              >
+                <Volume2 className="w-5 h-5" />
+              </Button>
             </div>
           </Card>
         </div>
+
+        {/* Audio Control Panel */}
+        {showAudioControls && (
+          <div className="mb-6 flex justify-center">
+            <AudioControlPanel 
+              audioEngine={premiumAudio}
+              className="w-full max-w-md"
+            />
+          </div>
+        )}
 
         {/* Experience Bar */}
         <Card className="p-4 mb-6">
@@ -358,9 +404,10 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
               </div>
             </div>
 
-            {/* Active Game Area */}
-            <div className="mt-8">
-              <Card className="p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
+            {/* Game Area with Background */}
+            <div className="mt-8 relative">
+              <ParallaxCoinsBackground />
+              <Card className="relative z-10 p-6 bg-gradient-to-br from-pgbet-dark via-black to-pgbet-dark border-2 border-pgbet-gold">
                 <div className="text-center mb-4">
                   <h3 className="text-xl font-bold text-pgbet-gold">
                     🎮 {games.find(g => g.id === activeGame)?.name || 'Zodiac Fortune Slots'}
