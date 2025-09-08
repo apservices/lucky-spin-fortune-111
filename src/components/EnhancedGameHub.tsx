@@ -13,6 +13,7 @@ import { CollectiblesSystem } from './CollectiblesSystem';
 import { VIPSystem } from './VIPSystem';
 import { GameStats } from './GameStats';
 import { DailyRewards } from './DailyRewards';
+import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
@@ -231,7 +232,8 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   );
 
   return (
-    <div className="min-h-screen bg-gradient-background p-4">
+    <SpriteSystem>
+      <div className="min-h-screen bg-gradient-background p-4">
       {/* Header with Stats */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -477,6 +479,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           energy={energy}
         />
       </div>
-    </div>
+      </div>
+    </SpriteSystem>
   );
 };

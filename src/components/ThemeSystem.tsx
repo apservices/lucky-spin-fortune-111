@@ -27,7 +27,7 @@ const themes: ThemeConfig[] = [
     preview: '🐯🦊🐸',
     bgClass: 'bg-gradient-to-br from-yellow-600 via-yellow-500 to-orange-500',
     accentColor: '#FFD700',
-    symbolSet: ['🐯', '🦊', '🐸', '🧧', '🍊', '📜'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'common',
   },
   {
@@ -38,7 +38,7 @@ const themes: ThemeConfig[] = [
     preview: '🔥🕊️⭐',
     bgClass: 'bg-gradient-to-br from-red-600 via-orange-500 to-yellow-500',
     accentColor: '#FF4500',
-    symbolSet: ['🔥', '🕊️', '⭐', '🌟', '💎', '👑'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'rare',
   },
   {
@@ -49,7 +49,7 @@ const themes: ThemeConfig[] = [
     preview: '🐼🎋🌸',
     bgClass: 'bg-gradient-to-br from-green-600 via-emerald-500 to-teal-500',
     accentColor: '#10B981',
-    symbolSet: ['🐼', '🎋', '🌸', '🍃', '🌿', '🧘'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'epic',
   },
   {
@@ -60,7 +60,7 @@ const themes: ThemeConfig[] = [
     preview: '🐲⚡🌊',
     bgClass: 'bg-gradient-to-br from-blue-700 via-purple-600 to-indigo-600',
     accentColor: '#3B82F6',
-    symbolSet: ['🐲', '⚡', '🌊', '☁️', '🌙', '🔮'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'epic',
   },
   {
@@ -71,7 +71,7 @@ const themes: ThemeConfig[] = [
     preview: '💚🏯🌺',
     bgClass: 'bg-gradient-to-br from-emerald-700 via-green-600 to-jade-500',
     accentColor: '#059669',
-    symbolSet: ['💚', '🏯', '🌺', '🎭', '🪷', '🕉️'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'legendary',
   },
   {
@@ -82,7 +82,7 @@ const themes: ThemeConfig[] = [
     preview: '🌌✨🪐',
     bgClass: 'bg-gradient-to-br from-purple-800 via-violet-700 to-fuchsia-600',
     accentColor: '#8B5CF6',
-    symbolSet: ['🌌', '✨', '🪐', '🌟', '💫', '🔯'],
+    symbolSet: ['tiger', 'fox', 'frog', 'envelope', 'orange', 'scroll'],
     rarity: 'legendary',
   },
 ];

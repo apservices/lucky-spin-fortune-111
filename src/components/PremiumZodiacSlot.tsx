@@ -25,6 +25,7 @@ import { ParticleSystem } from './ParticleSystem';
 import { MascotSystem } from './MascotSystem';
 import { ThemeSystem, GameTheme, themes, type ThemeConfig } from './ThemeSystem';
 import { AudioSystem, gameAudio } from './AudioSystem';
+import { SpriteComponent, SpriteSystem, SYMBOL_SPRITES, type SpriteSymbol } from './SpriteSystem';
 
 interface PremiumZodiacSlotProps {
   coins: number;
@@ -36,12 +37,8 @@ interface PremiumZodiacSlotProps {
   onExperienceChange: (newExp: number) => void;
 }
 
-type Symbol = {
-  emoji: string;
-  name: string;
-  multiplier: number;
-  rarity: 'common' | 'rare' | 'legendary';
-  color: string;
+// Use SpriteSymbol type from SpriteSystem
+type Symbol = SpriteSymbol & {
   winSound: string;
 };
 
@@ -57,14 +54,15 @@ type WinParticle = {
   symbol: string;
 };
 
-const symbols: Symbol[] = [
-  { emoji: '🐯', name: 'Tigre Dourado', multiplier: 50, rarity: 'legendary', color: 'text-pgbet-gold', winSound: 'roar' },
-  { emoji: '🦊', name: 'Raposa da Sorte', multiplier: 20, rarity: 'rare', color: 'text-pgbet-amber', winSound: 'magic' },
-  { emoji: '🐸', name: 'Sapo da Prosperidade', multiplier: 15, rarity: 'rare', color: 'text-pgbet-emerald', winSound: 'prosperity' },
-  { emoji: '🧧', name: 'Envelope Vermelho', multiplier: 12, rarity: 'rare', color: 'text-pgbet-red', winSound: 'fortune' },
-  { emoji: '🍊', name: 'Laranja da Fortuna', multiplier: 8, rarity: 'common', color: 'text-pgbet-amber', winSound: 'fruit' },
-  { emoji: '📜', name: 'Pergaminho Místico', multiplier: 25, rarity: 'rare', color: 'text-pgbet-purple', winSound: 'mystic' },
-];
+const symbols: Symbol[] = SYMBOL_SPRITES.map(sprite => ({
+  ...sprite,
+  winSound: sprite.id === 'tiger' ? 'roar' : 
+            sprite.id === 'fox' ? 'magic' :
+            sprite.id === 'frog' ? 'prosperity' :
+            sprite.id === 'envelope' ? 'fortune' :
+            sprite.id === 'orange' ? 'fruit' :
+            'mystic'
+}));
 
 export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   coins,
@@ -144,7 +142,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
   const getRandomSymbol = useCallback((): Symbol => {
     const themeConfig = getCurrentThemeConfig();
     const themeSymbols = symbols.filter(symbol => 
-      themeConfig.symbolSet.includes(symbol.emoji)
+      themeConfig.symbolSet.includes(symbol.id)
     );
     
     const weights = {
@@ -367,7 +365,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
         setWinStreak(prev => prev + 1);
         
         // Set winning symbol for mascot animation
-        setCurrentWinningSymbol(result.symbol?.emoji || '');
+        setCurrentWinningSymbol(result.symbol?.id || '');
         
         // Update coins with winnings
         onCoinsChange(coins - bet + result.amount);
@@ -382,7 +380,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
           createWinParticles(
             rect.width / 2,
             rect.height / 2,
-            result.symbol?.emoji || '💰',
+            result.symbol?.id || '💰',
             result.symbol?.color || 'text-pgbet-gold'
           );
         }
@@ -393,9 +391,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
           setMascotMood('magical');
           setParticleType('jackpot');
           setParticleTrigger(prev => prev + 1);
-          gameAudio.playMascotSound(result.symbol?.emoji || '');
+          gameAudio.playMascotSound(result.symbol?.id || '');
           toast.success(
-            `🎰 MEGA JACKPOT! ${result.symbol?.emoji} ${result.symbol?.name}! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
+            `🎰 MEGA JACKPOT! ${result.symbol?.name}! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
             {
               duration: 6000,
               style: {
@@ -412,9 +410,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
           setMascotMood('celebrating');
           setParticleType('coin_burst');
           setParticleTrigger(prev => prev + 1);
-          gameAudio.playMascotSound(result.symbol?.emoji || '');
+          gameAudio.playMascotSound(result.symbol?.id || '');
           toast.success(
-            `🎉 Grande Vitória! ${result.symbol?.emoji} +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
+            `🎉 Grande Vitória! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`,
             {
               duration: 3000,
               style: {
@@ -430,7 +428,7 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
           setMascotMood('excited');
           setParticleType('win');
           setParticleTrigger(prev => prev + 1);
-          toast.success(`✨ Vitória! ${result.symbol?.emoji} +${result.amount} moedas! x${result.multiplier.toFixed(1)}`);
+          toast.success(`✨ Vitória! +${result.amount} moedas! x${result.multiplier.toFixed(1)}`);
         }
         
         checkAchievements(newTotalSpins, winStreak + 1, result.amount);
@@ -604,21 +602,12 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
                         : undefined
                     }}
                   >
-                    <span 
-                      className={`${symbol.color} relative z-20 drop-shadow-xl transition-all duration-300 ${
-                        showWin && rowIndex === 1 ? 'scale-125' : ''
-                      }`}
-                      style={{
-                        filter: `drop-shadow(0 0 15px currentColor) ${
-                          showWin && rowIndex === 1 ? 'brightness(1.5)' : 'brightness(1)'
-                        }`,
-                        textShadow: showWin && rowIndex === 1 
-                          ? '0 0 30px currentColor, 0 0 50px currentColor' 
-                          : '0 0 20px currentColor'
-                      }}
-                    >
-                      {symbol.emoji}
-                    </span>
+                    <SpriteComponent 
+                      symbol={symbols.find(s => s.id === symbol.id) || symbols[0]}
+                      isWinning={showWin && rowIndex === 1}
+                      size="lg"
+                      className="w-full h-full"
+                    />
                     
                     {/* Premium glow effect */}
                     <div className={`absolute inset-0 bg-gradient-radial from-current/30 to-transparent rounded-2xl ${
@@ -778,7 +767,10 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
             {symbols.map(symbol => (
               <div key={symbol.name} className="flex items-center justify-between p-2 bg-black/30 rounded-lg">
                 <div className="flex items-center space-x-2">
-                  <span className={`${symbol.color} text-lg`}>{symbol.emoji}</span>
+                  <SpriteComponent 
+                    symbol={symbol}
+                    size="sm"
+                  />
                   <span className="text-gray-300 text-xs">{symbol.name}</span>
                 </div>
                 <div className="text-right">
