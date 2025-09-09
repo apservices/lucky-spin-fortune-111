@@ -12,7 +12,7 @@ import { MissionsSystem } from './MissionsSystem';
 import { CollectiblesSystem } from './CollectiblesSystem';
 import { VIPSystem } from './VIPSystem';
 import { GameStats } from './GameStats';
-import { DailyRewards } from './DailyRewards';
+import { CalendarRewardSystem } from './CalendarRewardSystem';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { OptimizedParticleSystem } from './OptimizedParticleSystem';
@@ -40,6 +40,10 @@ interface EnhancedGameHubProps {
   onEnergyChange: (newEnergy: number) => void;
   onExperienceChange: (newXP: number) => void;
   onLevelUp: () => void;
+  onCalendarCoins?: (coins: number) => void;
+  onCalendarXP?: (xp: number) => void;
+  onThemeChange?: (themeId: string | null) => void;
+  onMultiplierChange?: (multiplier: number) => void;
 }
 
 export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
@@ -56,7 +60,11 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   onCoinsChange,
   onEnergyChange,
   onExperienceChange,
-  onLevelUp
+  onLevelUp,
+  onCalendarCoins,
+  onCalendarXP,
+  onThemeChange,
+  onMultiplierChange
 }) => {
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
@@ -484,12 +492,11 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           </TabsContent>
 
           <TabsContent value="rewards">
-            <DailyRewards
-              currentDay={dailyStreak}
-              onClaimReward={(day, coins, energy) => {
-                onCoinsChange(coins + coins);
-                onEnergyChange(Math.min(energy + energy, maxEnergy));
-              }}
+            <CalendarRewardSystem
+              onCoinsChange={onCalendarCoins}
+              onXPChange={onCalendarXP}
+              onThemeChange={onThemeChange}
+              onMultiplierChange={onMultiplierChange}
             />
           </TabsContent>
 

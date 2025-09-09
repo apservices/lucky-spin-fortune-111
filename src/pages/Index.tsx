@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { EnhancedGameHub } from '@/components/EnhancedGameHub';
 import { GameStats } from '@/components/GameStats';
 import { GameHeader } from '@/components/GameHeader';
-import { DailyRewards } from '@/components/DailyRewards';
+import { CalendarRewardSystem } from '@/components/CalendarRewardSystem';
 import { Achievements } from '@/components/Achievements';
 import { ReferralSystem } from '@/components/ReferralSystem';
 import { EventsAndChests } from '@/components/EventsAndChests';
@@ -25,8 +25,9 @@ const Index = () => {
   const [maxExperience] = useState(1000);
   const [dailySpins, setDailySpins] = useState(3);
   const [maxDailySpins] = useState(20);
-  const [currentDay, setCurrentDay] = useState(1);
   const [gameStarted, setGameStarted] = useState(false);
+  const [currentTheme, setCurrentTheme] = useState<string | null>(null);
+  const [currentMultiplier, setCurrentMultiplier] = useState(1);
   
   // New game state
   const [totalSpins, setTotalSpins] = useState(45);
@@ -93,11 +94,26 @@ const Index = () => {
     }
   };
 
-  const handleClaimDailyReward = (day: number, rewardCoins: number, rewardEnergy: number) => {
-    setCoins(prev => prev + rewardCoins);
-    setEnergy(prev => Math.min(prev + rewardEnergy, maxEnergy));
-    setCurrentDay(prev => prev + 1);
-    setDailyStreak(prev => prev + 1);
+  const handleCalendarReward = (coins: number) => {
+    setCoins(prev => prev + coins);
+    toast.success(`🎁 +${coins} moedas coletadas!`, {
+      duration: 3000,
+      style: {
+        background: 'hsl(var(--pgbet-gold))',
+        color: 'hsl(var(--pgbet-dark))',
+      }
+    });
+  };
+
+  const handleCalendarXP = (xp: number) => {
+    setExperience(prev => prev + xp);
+    toast.success(`⭐ +${xp} XP ganho!`, {
+      duration: 2000,
+      style: {
+        background: 'hsl(var(--pgbet-emerald))',
+        color: 'white',
+      }
+    });
   };
 
   const handleAddReferral = (code: string) => {
@@ -231,6 +247,10 @@ const Index = () => {
           setExperience(0);
           setCoins(prev => prev + 500);
         }}
+        onCalendarCoins={handleCalendarReward}
+        onCalendarXP={handleCalendarXP}
+        onThemeChange={setCurrentTheme}
+        onMultiplierChange={setCurrentMultiplier}
       />
     </div>
   );
