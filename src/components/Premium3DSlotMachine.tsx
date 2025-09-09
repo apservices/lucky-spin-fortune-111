@@ -357,61 +357,6 @@ export const Premium3DSlotMachine: React.FC = () => {
           {isSpinning ? 'Girando...' : `Girar (${betAmount} moedas)`}
         </Button>
       </div>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-sm font-medium">Aposta:</span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setBetAmount(prev => Math.max(1, prev - 1))}
-              disabled={isSpinning}
-            >
-              -
-            </Button>
-            <Badge variant="secondary" className="px-3 py-1 text-lg">
-              {betAmount}
-            </Badge>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setBetAmount(prev => Math.min(state.coins, prev + 1))}
-              disabled={isSpinning}
-            >
-              +
-            </Button>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button
-              variant={turboMode ? "default" : "outline"}
-              size="sm"
-              onClick={() => setTurboMode(!turboMode)}
-              disabled={isSpinning}
-            >
-              <Zap className="w-4 h-4 mr-1" />
-              Turbo
-            </Button>
-            <Button
-              variant={autoSpin ? "default" : "outline"}
-              size="sm"
-              onClick={() => setAutoSpin(!autoSpin)}
-              disabled={isSpinning}
-            >
-              <RotateCcw className="w-4 h-4 mr-1" />
-              Auto
-            </Button>
-          </div>
-        </div>
-
-        <Button
-          onClick={handleSpin}
-          disabled={isSpinning || state.coins < betAmount}
-          className="w-full py-4 text-xl font-bold bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 transition-all duration-300"
-        >
-          <PlayCircle className="w-6 h-6 mr-2" />
-          {isSpinning ? 'Girando...' : `Girar (${betAmount} moedas)`}
-        </Button>
-      </div>
     </Card>
   );
 };
