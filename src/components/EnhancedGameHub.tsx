@@ -13,6 +13,7 @@ import { CollectiblesSystem } from './CollectiblesSystem';
 import { VIPSystem } from './VIPSystem';
 import { GameStats } from './GameStats';
 import { CalendarRewardSystem } from './CalendarRewardSystem';
+import { GameSettingsPanel } from './GameSettingsPanel';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { OptimizedParticleSystem } from './OptimizedParticleSystem';
@@ -21,7 +22,7 @@ import { MinimalAudioControl } from './MinimalAudioControl';
 import { HapticProvider, useGameHaptics } from './HapticSystem';
 import { 
   Crown, Star, Zap, Coins, Gift, Target, Gem, 
-  Trophy, Calendar, Users, PlayCircle, Gamepad2, Volume2 
+  Trophy, Calendar, Users, PlayCircle, Gamepad2, Volume2, Settings 
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -69,6 +70,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
+  const [settingsOpen, setSettingsOpen] = useState(false);
   
   // Haptic feedback for level ups
   const gameHaptics = useGameHaptics();
@@ -277,8 +279,19 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   return (
     <HapticProvider>
       <div className="min-h-screen bg-gradient-background p-4">
-        {/* Minimal Audio Control */}
-        <MinimalAudioControl />
+        {/* Minimal Audio Control & Settings */}
+        <div className="fixed top-4 right-4 z-50 flex gap-2">
+          <MinimalAudioControl />
+          <Button
+            onClick={() => setSettingsOpen(true)}
+            variant="outline"
+            size="sm"
+            className="bg-background/80 backdrop-blur-sm border border-primary/20"
+          >
+            <Settings className="w-4 h-4 mr-2" />
+            Configurações
+          </Button>
+        </div>
       {/* Header with Stats */}
       <div className="max-w-7xl mx-auto mb-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mb-6">
@@ -520,7 +533,13 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
         <div className="w-16 h-16 bg-gradient-to-br from-pgbet-gold to-pgbet-red rounded-full flex items-center justify-center text-2xl animate-bounce">
           🐯
         </div>
-      </div>
+        </div>
+
+        {/* Settings Panel */}
+        <GameSettingsPanel
+          isOpen={settingsOpen}
+          onOpenChange={setSettingsOpen}
+        />
       </div>
     </HapticProvider>
   );

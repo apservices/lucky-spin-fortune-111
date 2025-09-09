@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { EnhancedGameHub } from '@/components/EnhancedGameHub';
 import { PerformanceDebugger } from '@/components/PerformanceDebugger';
 import { GameStats } from '@/components/GameStats';
