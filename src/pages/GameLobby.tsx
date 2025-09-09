@@ -56,6 +56,13 @@ const GameLobby: React.FC = () => {
       badge: 'Virtual'
     },
     {
+      title: 'Resgatar Prêmios',
+      subtitle: 'Trocar por recompensas',
+      icon: Gift,
+      action: () => navigate('/rewards'),
+      badge: 'Novo!'
+    },
+    {
       title: 'Conquistas',
       subtitle: 'Ver progresso',
       icon: Trophy,

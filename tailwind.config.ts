@@ -241,7 +241,8 @@ export default {
 				'gradient-red': 'var(--gradient-red)',
 				'gradient-wheel': 'var(--gradient-wheel)',
 				'gradient-background': 'var(--gradient-background)',
-				'gradient-reels': 'var(--gradient-reels)'
+				'gradient-reels': 'var(--gradient-reels)',
+				'gradient-radial': 'radial-gradient(circle, var(--tw-gradient-stops))'
 			},
 			boxShadow: {
 				'glow-gold': 'var(--glow-gold)',
