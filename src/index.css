@@ -74,10 +74,23 @@ All colors MUST be HSL.
     --gradient-background: radial-gradient(ellipse at center, hsl(0 0% 8%) 0%, hsl(0 0% 4%) 100%);
     --gradient-reels: linear-gradient(180deg, hsl(0 0% 12%) 0%, hsl(0 0% 6%) 100%);
     
-    /* Fortune Tiger signature glows */
-    --glow-gold: 0 0 30px hsl(45 100% 50% / 0.6), 0 0 60px hsl(45 100% 50% / 0.3);
-    --glow-red: 0 0 30px hsl(0 80% 45% / 0.6), 0 0 60px hsl(0 80% 45% / 0.3);
-    --shadow-fortune: 0 10px 40px hsl(0 0% 0% / 0.8);
+/* Phoenix Theme Colors */
+--phoenix-primary: 0 85% 50%;     /* Deep red-orange */
+--phoenix-secondary: 25 100% 55%; /* Golden orange */
+--phoenix-accent: 39 100% 50%;    /* Pure gold */
+--phoenix-bg: linear-gradient(135deg, hsl(0, 85%, 50%) 0%, hsl(25, 100%, 55%) 50%, hsl(39, 100%, 50%) 100%);
+
+/* Panda Theme Colors */
+--panda-primary: 120 60% 40%;     /* Bamboo green */
+--panda-secondary: 45 15% 85%;    /* Pearl white */
+--panda-accent: 45 80% 60%;       /* Soft gold */
+--panda-bg: linear-gradient(135deg, hsl(120, 60%, 40%) 0%, hsl(140, 50%, 45%) 50%, hsl(45, 80%, 60%) 100%);
+
+/* Dragon Theme Colors */
+--dragon-primary: 220 85% 45%;    /* Imperial blue */
+--dragon-secondary: 240 15% 75%;  /* Mystic silver */
+--dragon-accent: 270 75% 55%;     /* Mystic purple */
+--dragon-bg: linear-gradient(135deg, hsl(220, 85%, 45%) 0%, hsl(240, 60%, 50%) 50%, hsl(270, 75%, 55%) 100%);
     
     --radius: 0.75rem;
 

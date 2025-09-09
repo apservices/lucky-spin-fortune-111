@@ -68,20 +68,23 @@ const SettingsPage: React.FC = () => {
 
           {/* Theme System */}
           <Card className="p-6 bg-gradient-to-br from-black/40 to-purple-900/40 backdrop-blur-md border-primary/30">
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-semibold text-white">🎨 Temas</h3>
-                  <p className="text-gray-400">Personalize a aparência do jogo</p>
-                </div>
-                <Button
-                  onClick={() => setShowThemeSystem(!showThemeSystem)}
-                  variant="outline"
-                  className="border-primary/30 text-white hover:bg-primary/10"
-                >
-                  {showThemeSystem ? 'Fechar' : 'Abrir Temas'}
-                </Button>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                 <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                   🎨 Temas
+                   <span className="text-sm text-gray-400">(Sistema Completo)</span>
+                 </h3>
+                <p className="text-gray-400">Personalize a aparência do jogo</p>
               </div>
+              <Button
+                onClick={() => setShowThemeSystem(!showThemeSystem)}
+                variant="outline"
+                className="border-primary/30 text-white hover:bg-primary/10"
+              >
+                {showThemeSystem ? 'Fechar' : 'Abrir Temas'}
+              </Button>
+            </div>
 
               {showThemeSystem && (
                 <motion.div
