@@ -1,12 +1,13 @@
-import { Premium3DSlotMachine } from "@/components/Premium3DSlotMachine";
+import { FullscreenSlotMachine } from "@/components/FullscreenSlotMachine";
 import { SpriteSystem } from "@/components/SpriteSystem";
+import { ParticleBackground } from "@/components/ParticleBackground";
 
 export default function Index() {
   return (
     <SpriteSystem>
-      <div className="min-h-screen bg-gradient-to-br from-background to-secondary/20 p-4">
-        <Premium3DSlotMachine />
-      </div>
+      <ParticleBackground>
+        <FullscreenSlotMachine />
+      </ParticleBackground>
     </SpriteSystem>
   );
 }
