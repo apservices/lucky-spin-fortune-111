@@ -72,7 +72,7 @@ const GameLobby: React.FC = () => {
       title: 'Loja VIP',
       subtitle: 'Itens especiais',
       icon: Crown,
-      action: () => navigate('/shop')
+      action: () => navigate('/vip')
     },
     {
       title: 'Configurações',

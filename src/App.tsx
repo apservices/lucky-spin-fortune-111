@@ -5,6 +5,13 @@ import { ConsentBanner } from '@/components/analytics/ConsentBanner';
 import { GameTransition } from '@/components/GameTransition';
 import GameLobby from '@/pages/GameLobby';
 import GamePlay from '@/pages/GamePlay';
+import MissionsPage from '@/pages/MissionsPage';
+import AchievementsPage from '@/pages/AchievementsPage';
+import DailyRewardsPage from '@/pages/DailyRewardsPage';
+import ReferralsPage from '@/pages/ReferralsPage';
+import VIPPage from '@/pages/VIPPage';
+import SettingsPage from '@/pages/SettingsPage';
+import AnalyticsPage from '@/pages/admin/Analytics';
 import NotFound from '@/pages/NotFound';
 
 function App() {
@@ -15,6 +22,13 @@ function App() {
           <Routes>
             <Route path="/" element={<GameLobby />} />
             <Route path="/game" element={<GamePlay />} />
+            <Route path="/missions" element={<MissionsPage />} />
+            <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/daily-rewards" element={<DailyRewardsPage />} />
+            <Route path="/referrals" element={<ReferralsPage />} />
+            <Route path="/vip" element={<VIPPage />} />
+            <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/admin/analytics" element={<AnalyticsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </GameTransition>

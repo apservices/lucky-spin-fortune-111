@@ -7,16 +7,17 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FullscreenSlotMachine } from '@/components/FullscreenSlotMachine';
 import { SpriteSystem } from '@/components/SpriteSystem';
-import { ParticleBackground } from '@/components/ParticleBackground';
 import { GamePauseMenu } from '@/components/GamePauseMenu';
 import { GameSplashScreen } from '@/components/GameSplashScreen';
 import { GameNavigationBar } from '@/components/GameNavigationBar';
 import { useGameState } from '@/systems/GameStateSystem';
+import { useGamePersistence } from '@/hooks/useGamePersistence';
 import { gameEvents, GameEventType } from '@/systems/EventSystem';
 
 const GamePlay: React.FC = () => {
   const navigate = useNavigate();
   const { state } = useGameState();
+  const { saveGameState } = useGamePersistence(); // Add persistence
   const [isLoading, setIsLoading] = useState(true);
   const [isPaused, setIsPaused] = useState(false);
   const [showExitConfirmation, setShowExitConfirmation] = useState(false);
@@ -69,18 +70,8 @@ const GamePlay: React.FC = () => {
   };
 
   const handleConfirmExit = () => {
-    // Save game state before exit
-    const gameData = {
-      coins: state.coins,
-      energy: state.energy,
-      level: state.level,
-      experience: state.experience,
-      lastPlayed: Date.now(),
-      totalSpins: state.totalSpins,
-      totalCoinsEarned: state.totalCoinsEarned
-    };
-
-    localStorage.setItem('zodiac-fortune-game-state', JSON.stringify(gameData));
+    // Save game state using the hook
+    saveGameState();
     
     // Navigate back with transition
     navigate('/', { replace: true });
@@ -117,22 +108,11 @@ const GamePlay: React.FC = () => {
   // Auto-save progress every 30 seconds
   useEffect(() => {
     const autoSaveInterval = setInterval(() => {
-      const gameData = {
-        coins: state.coins,
-        energy: state.energy,
-        level: state.level,
-        experience: state.experience,
-        lastPlayed: Date.now(),
-        totalSpins: state.totalSpins,
-        totalCoinsEarned: state.totalCoinsEarned,
-        autoSaved: true
-      };
-
-      localStorage.setItem('zodiac-fortune-autosave', JSON.stringify(gameData));
+      saveGameState(true); // Mark as auto-save
     }, 30000);
 
     return () => clearInterval(autoSaveInterval);
-  }, [state]);
+  }, [saveGameState]);
 
   if (isLoading) {
     return <GameSplashScreen />;
@@ -157,9 +137,7 @@ const GamePlay: React.FC = () => {
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          <ParticleBackground>
-            <FullscreenSlotMachine />
-          </ParticleBackground>
+          <FullscreenSlotMachine />
         </motion.div>
 
         {/* Pause Menu Overlay */}
