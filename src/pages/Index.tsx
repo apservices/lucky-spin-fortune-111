@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
 import { EnhancedGameHub } from '@/components/EnhancedGameHub';
+import { PerformanceDebugger } from '@/components/PerformanceDebugger';
 import { GameStats } from '@/components/GameStats';
 import { GameHeader } from '@/components/GameHeader';
 import { CalendarRewardSystem } from '@/components/CalendarRewardSystem';
@@ -228,30 +228,35 @@ const Index = () => {
   return (
     <div className="relative">
       {/* Removed heavy floating background for performance */}
-      <EnhancedGameHub
-        coins={coins}
-        energy={energy}
-        level={level}
-        experience={experience}
-        maxExperience={maxExperience}
-        maxEnergy={maxEnergy}
-        totalSpins={totalSpins}
-        totalCoinsEarned={totalCoinsEarned}
-        dailyStreak={dailyStreak}
-        lastWin={lastWin}
-        onCoinsChange={handleCoinsChange}
-        onEnergyChange={handleEnergyChange}
-        onExperienceChange={setExperience}
-        onLevelUp={() => {
-          setLevel(prev => prev + 1);
-          setExperience(0);
-          setCoins(prev => prev + 500);
-        }}
-        onCalendarCoins={handleCalendarReward}
-        onCalendarXP={handleCalendarXP}
-        onThemeChange={setCurrentTheme}
-        onMultiplierChange={setCurrentMultiplier}
-      />
+      <div className="relative">
+        <EnhancedGameHub
+          coins={coins}
+          energy={energy}
+          level={level}
+          experience={experience}
+          maxExperience={maxExperience}
+          maxEnergy={maxEnergy}
+          totalSpins={totalSpins}
+          totalCoinsEarned={totalCoinsEarned}
+          dailyStreak={dailyStreak}
+          lastWin={lastWin}
+          onCoinsChange={handleCoinsChange}
+          onEnergyChange={handleEnergyChange}
+          onExperienceChange={setExperience}
+          onLevelUp={() => {
+            setLevel(prev => prev + 1);
+            setExperience(0);
+            setCoins(prev => prev + 500);
+          }}
+          onCalendarCoins={handleCalendarReward}
+          onCalendarXP={handleCalendarXP}
+          onThemeChange={setCurrentTheme}
+          onMultiplierChange={setCurrentMultiplier}
+        />
+        
+        {/* Performance Monitor - only show in development */}
+        <PerformanceDebugger />
+      </div>
     </div>
   );
 };
