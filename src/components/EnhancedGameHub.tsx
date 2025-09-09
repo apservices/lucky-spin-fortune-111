@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLocalization } from '@/hooks/useLocalization';
+import { BrazilianSymbols, RandomBrazilianSymbol, BrazilianThemeOverlay, BrazilianColorStripe } from './BrazilianCulturalSymbols';
 import { WheelGame } from './WheelGame';
 import { SlotMachine } from './SlotMachine';
 import { FortuneTigerSlot } from './FortuneTigerSlot';
@@ -67,6 +69,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   onThemeChange,
   onMultiplierChange
 }) => {
+  const { t, formatCurrency, formatNumber, getExpression, symbols } = useLocalization();
   const [activeTab, setActiveTab] = useState('games');
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
@@ -81,12 +84,12 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
     optimizedAudio.setEnabled(true);
   }, []);
 
-  // Available games
+  // Available games with Brazilian cultural themes
   const games = [
     {
       id: 'fortune-tiger',
-      name: 'Fortune Tiger',
-      description: 'O clássico caça-níquel Fortune Tiger',
+      name: t('games.fortuneTiger'),
+      description: 'O clássico caça-níquel com sabor brasileiro',
       minLevel: 1,
       icon: <div className="text-2xl">🐯</div>,
       isNew: false,
@@ -94,7 +97,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
     },
     {
       id: 'wheel-fortune',
-      name: 'Roda da Fortuna',
+      name: t('games.wheelFortune'),
       description: 'Gire a roda e ganhe prêmios incríveis',
       minLevel: 1,
       icon: <div className="text-2xl">🎡</div>,
@@ -103,7 +106,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
     },
     {
       id: 'wild-slots',
-      name: 'Wild Slots Animais',
+      name: t('games.wildSlots'),
       description: 'Slots com animais selvagens da sorte',
       minLevel: 1,
       icon: <div className="text-2xl">🦊</div>,
@@ -111,31 +114,44 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
       featured: false
     },
     {
-      id: 'dragon-treasure',
-      name: 'Tesouro do Dragão',
-      description: 'Desperte o dragão e encontre tesouros',
+      id: 'carnival-slots',
+      name: t('games.carnivalSlots'),
+      description: 'Viva o carnaval brasileiro com grandes prêmios!',
+      minLevel: 3,
+      icon: <div className="text-2xl">{symbols.brazilian.carnival}</div>,
+      isNew: true,
+      featured: true,
+      brazilian: true
+    },
+    {
+      id: 'football-fortune',
+      name: t('games.footballFortune'),
+      description: 'Jogue com a paixão nacional e ganhe como um campeão!',
       minLevel: 5,
-      icon: <div className="text-2xl">🐲</div>,
+      icon: <div className="text-2xl">{symbols.brazilian.football}</div>,
       isNew: true,
-      featured: true
+      featured: true,
+      brazilian: true
     },
     {
-      id: 'phoenix-fire',
-      name: 'Fogo da Fênix',
-      description: 'Renasça das cinzas com grandes prêmios',
-      minLevel: 10,
-      icon: <div className="text-2xl">🔥</div>,
+      id: 'acai-berry',
+      name: t('games.acaiBerry'),
+      description: 'O sabor roxo da sorte direto da Amazônia!',
+      minLevel: 8,
+      icon: <BrazilianSymbols.Acai />,
       isNew: true,
-      featured: false
+      featured: false,
+      brazilian: true
     },
     {
-      id: 'golden-palace',
-      name: 'Palácio Dourado',
-      description: 'Entre no palácio e encontre riquezas',
-      minLevel: 15,
-      icon: <div className="text-2xl">🏰</div>,
+      id: 'brigadeiro-gold',
+      name: t('games.brigadeiro'),
+      description: 'Docinhos que valem ouro no mundo dos slots!',
+      minLevel: 12,
+      icon: <BrazilianSymbols.Brigadeiro />,
       isNew: false,
-      featured: false
+      featured: false,
+      brazilian: true
     }
   ];
 
@@ -143,29 +159,33 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   useEffect(() => {
     const newNotifications: string[] = [];
 
-    // Level milestones with haptic feedback
+    // Level milestones with haptic feedback and Brazilian expressions
+    if (level === 3) {
+      newNotifications.push(`${symbols.brazilian.carnival} Nível 3! Slots do Carnaval desbloqueados! ${getExpression('celebration')}`);
+      gameHaptics.levelUpHaptic(3);
+    }
     if (level === 5) {
-      newNotifications.push('🎉 Nível 5 alcançado! Novo jogo desbloqueado!');
+      newNotifications.push(`${symbols.brazilian.football} Nível 5! Fortuna do Futebol liberada! ${getExpression('bigWin')}`);
       gameHaptics.levelUpHaptic(5);
     }
-    if (level === 10) {
-      newNotifications.push('🔥 Nível 10! Fogo da Fênix disponível!');
-      gameHaptics.levelUpHaptic(10);
+    if (level === 8) {
+      newNotifications.push(`${symbols.brazilian.acai} Nível 8! Açaí da Sorte disponível! ${getExpression('luck')}`);
+      gameHaptics.levelUpHaptic(8);
     }
-    if (level === 15) {
-      newNotifications.push('🏰 Nível 15! Palácio Dourado desbloqueado!');
-      gameHaptics.levelUpHaptic(15);
+    if (level === 12) {
+      newNotifications.push(`🍫 Nível 12! Doce Fortuna desbloqueado! ${getExpression('celebration')}`);
+      gameHaptics.levelUpHaptic(12);
     }
 
-    // Coin milestones
+    // Coin milestones with Brazilian currency
     if (totalCoinsEarned >= 100000 && totalCoinsEarned < 100500) {
-      newNotifications.push('💰 100.000 moedas ganhas! Você é um verdadeiro magnata!');
+      newNotifications.push(`${symbols.currency.money} ${formatNumber(100000)} moedas ganhas! ${getExpression('bigWin')}`);
       gameHaptics.success();
     }
 
     // Spin milestones
     if (totalSpins >= 100 && totalSpins < 105) {
-      newNotifications.push('🎰 100 giros completados! Mestre dos slots!');
+      newNotifications.push(`🎰 ${formatNumber(100)} giros completados! ${getExpression('celebration')}`);
       gameHaptics.success();
     }
 
@@ -215,18 +235,23 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   };
 
   const renderGameCard = (game: any) => (
-    <Card key={game.id} className={`p-6 transition-all hover:scale-105 cursor-pointer ${
+    <Card key={game.id} className={`p-6 transition-all hover:scale-105 cursor-pointer relative overflow-hidden ${
       game.featured 
         ? 'bg-gradient-to-br from-fortune-gold/20 to-fortune-ember/20 border-2 border-fortune-gold shadow-glow-gold' 
         : 'bg-card/80 border border-primary/30'
-    } ${!canPlayGame(game.minLevel) ? 'opacity-50' : ''}`}>
-      <div className="space-y-4">
+    } ${game.brazilian ? 'border-green-500/30' : ''} ${!canPlayGame(game.minLevel) ? 'opacity-50' : ''}`}>
+      {game.brazilian && <BrazilianColorStripe className="absolute top-0 left-0 w-full opacity-20" />}
+      <div className="space-y-4 relative z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            {game.icon}
+            <div className="flex items-center">
+              {game.icon}
+              {game.brazilian && <span className="ml-1 text-xs">{symbols.brazilian.flag}</span>}
+            </div>
             <div>
-              <h3 className={`font-bold ${game.featured ? 'text-fortune-gold' : 'text-primary'}`}>
+              <h3 className={`font-bold flex items-center gap-2 ${game.featured ? 'text-fortune-gold' : 'text-primary'}`}>
                 {game.name}
+                {game.brazilian && <RandomBrazilianSymbol />}
               </h3>
               <p className="text-sm text-muted-foreground">{game.description}</p>
             </div>
@@ -239,8 +264,11 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
             {game.featured && (
               <Badge className="bg-fortune-gold text-fortune-dark">DESTAQUE</Badge>
             )}
+            {game.brazilian && (
+              <Badge className="bg-green-500/20 text-green-400 border border-green-500/30">BR</Badge>
+            )}
             <div className="text-xs text-muted-foreground">
-              Nível {game.minLevel}+
+              {t('ui.level')} {game.minLevel}+
             </div>
           </div>
         </div>
@@ -266,10 +294,10 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
             className={`${game.featured 
               ? 'bg-gradient-gold hover:scale-105 text-fortune-dark' 
               : ''
-            }`}
+            } ${game.brazilian ? 'border border-green-500/30 hover:border-green-500/50' : ''}`}
           >
             <PlayCircle className="w-4 h-4 mr-2" />
-            {!canPlayGame(game.minLevel) ? 'Bloqueado' : 'Jogar'}
+            {!canPlayGame(game.minLevel) ? 'Bloqueado' : t('ui.play')}
           </Button>
         </div>
       </div>
@@ -279,7 +307,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   return (
     <HapticProvider>
       <div className="min-h-screen bg-gradient-background p-4">
-        {/* Minimal Audio Control & Settings */}
+        {/* Settings Button */}
         <div className="fixed top-4 right-4 z-50 flex gap-2">
           <MinimalAudioControl />
           <Button
@@ -289,7 +317,7 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
             className="bg-background/80 backdrop-blur-sm border border-primary/20"
           >
             <Settings className="w-4 h-4 mr-2" />
-            Configurações
+            {t('ui.settings')}
           </Button>
         </div>
       {/* Header with Stats */}
@@ -300,9 +328,11 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
               <Coins className="w-8 h-8 text-fortune-gold" />
               <div>
                 <div className="text-2xl font-bold text-fortune-gold">
-                  {coins.toLocaleString()}
+                  {formatNumber(coins)}
                 </div>
-                <div className="text-sm text-muted-foreground">Moedas</div>
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  {symbols.currency.coins} {t('currency.coins')}
+                </div>
               </div>
             </div>
           </Card>
@@ -314,7 +344,9 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
                 <div className="text-2xl font-bold text-primary">
                   {energy}/{maxEnergy}
                 </div>
-                <div className="text-sm text-muted-foreground">Energia</div>
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  {symbols.luck.lightning} {t('ui.energy')}
+                </div>
               </div>
             </div>
           </Card>
@@ -326,7 +358,9 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
                 <div className="text-2xl font-bold text-secondary">
                   {level}
                 </div>
-                <div className="text-sm text-muted-foreground">Nível</div>
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  {symbols.luck.star} {t('ui.level')}
+                </div>
               </div>
             </div>
           </Card>
@@ -336,9 +370,11 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
               <Trophy className="w-8 h-8 text-accent" />
               <div>
                 <div className="text-2xl font-bold text-accent">
-                  {totalSpins}
+                  {formatNumber(totalSpins)}
                 </div>
-                <div className="text-sm text-muted-foreground">Total Giros</div>
+                <div className="text-sm text-muted-foreground flex items-center gap-1">
+                  🎰 {t('ui.totalSpins')}
+                </div>
               </div>
             </div>
           </Card>
@@ -346,15 +382,19 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
 
 
         {/* Experience Bar */}
-        <Card className="p-4 mb-6">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Experiência</span>
-            <span className="text-sm text-muted-foreground">
-              {experience}/{maxExperience} XP
-            </span>
-          </div>
-          <Progress value={(experience / maxExperience) * 100} className="h-3" />
-        </Card>
+        <BrazilianThemeOverlay>
+          <Card className="p-4 mb-6">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium flex items-center gap-1">
+                {symbols.luck.star} {t('ui.experience')}
+              </span>
+              <span className="text-sm text-muted-foreground">
+                {formatNumber(experience)}/{formatNumber(maxExperience)} XP
+              </span>
+            </div>
+            <Progress value={(experience / maxExperience) * 100} className="h-3" />
+          </Card>
+        </BrazilianThemeOverlay>
 
         {/* Notifications */}
         {notifications.length > 0 && (
@@ -376,27 +416,27 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
           <TabsList className="grid w-full grid-cols-6 mb-6">
             <TabsTrigger value="games" className="flex items-center space-x-2">
               <Gamepad2 className="w-4 h-4" />
-              <span>Jogos</span>
+              <span>{t('ui.games')}</span>
             </TabsTrigger>
             <TabsTrigger value="missions" className="flex items-center space-x-2">
               <Target className="w-4 h-4" />
-              <span>Missões</span>
+              <span>{t('ui.missions')}</span>
             </TabsTrigger>
             <TabsTrigger value="collectibles" className="flex items-center space-x-2">
               <Gem className="w-4 h-4" />
-              <span>Colecionáveis</span>
+              <span>{t('ui.collectibles')}</span>
             </TabsTrigger>
             <TabsTrigger value="vip" className="flex items-center space-x-2">
               <Crown className="w-4 h-4" />
-              <span>VIP</span>
+              <span>{t('ui.vip')}</span>
             </TabsTrigger>
             <TabsTrigger value="rewards" className="flex items-center space-x-2">
               <Gift className="w-4 h-4" />
-              <span>Recompensas</span>
+              <span>{t('ui.rewards')}</span>
             </TabsTrigger>
             <TabsTrigger value="stats" className="flex items-center space-x-2">
               <Trophy className="w-4 h-4" />
-              <span>Estatísticas</span>
+              <span>{t('ui.stats')}</span>
             </TabsTrigger>
           </TabsList>
 

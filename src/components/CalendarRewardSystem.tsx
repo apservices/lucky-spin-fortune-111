@@ -4,6 +4,8 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, Flame } from 'lucide-react';
 import { VisualDailyBonusCalendar } from './VisualDailyBonusCalendar';
 import { useCalendarProgress } from '@/hooks/useCalendarProgress';
+import { useLocalization } from '@/hooks/useLocalization';
+import { BrazilianTimezone } from './BrazilianTimezone';
 
 interface CalendarRewardSystemProps {
   onCoinsChange?: (coins: number) => void;
@@ -19,6 +21,7 @@ export const CalendarRewardSystem: React.FC<CalendarRewardSystemProps> = ({
   onMultiplierChange
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { t, formatNumber, symbols } = useLocalization();
   const { 
     progress, 
     calendarDays, 
@@ -64,60 +67,65 @@ export const CalendarRewardSystem: React.FC<CalendarRewardSystemProps> = ({
 
   return (
     <>
-      <Button 
-        variant="outline" 
-        onClick={() => setIsOpen(true)}
-        className={`
-          relative bg-gradient-to-r from-primary/10 to-secondary/10 
-          hover:from-primary/20 hover:to-secondary/20 transition-all duration-300
-          ${hasAvailableReward ? 'animate-pgbet-glow border-pgbet-gold' : ''}
-        `}
-      >
-        <Calendar className="w-4 h-4 mr-2" />
-        Calendário Diário
+      <div className="space-y-2">
+        <BrazilianTimezone showCountdown className="justify-center" />
         
-        {/* Current streak indicator */}
-        {progress.currentStreak > 0 && (
-          <div className="flex items-center ml-2 gap-1">
-            <Flame className="w-3 h-3 text-pgbet-red" />
-            <span className="text-xs">{progress.currentStreak}</span>
-          </div>
-        )}
-        
-        {/* Available reward badge */}
-        {hasAvailableReward && (
-          <Badge 
-            variant="secondary" 
-            className="ml-2 animate-bounce-coin bg-pgbet-gold text-pgbet-dark"
-          >
-            Dia {today}
-          </Badge>
-        )}
-        
-        {/* Active effects indicators */}
-        {activeMultiplier > 1 && (
-          <Badge 
-            variant="outline" 
-            className="ml-1 text-xs bg-pgbet-purple/20 text-pgbet-purple border-pgbet-purple/30"
-          >
-            {activeMultiplier}x
-          </Badge>
-        )}
-        
-        {activeTheme && (
-          <Badge 
-            variant="outline" 
-            className="ml-1 text-xs bg-pgbet-emerald/20 text-pgbet-emerald border-pgbet-emerald/30"
-          >
-            🎨
-          </Badge>
-        )}
-        
-        {/* Pulse effect for available rewards */}
-        {hasAvailableReward && (
-          <div className="absolute inset-0 rounded-md bg-pgbet-gold/10 animate-pulse pointer-events-none" />
-        )}
-      </Button>
+        <Button 
+          variant="outline" 
+          onClick={() => setIsOpen(true)}
+          className={`
+            relative bg-gradient-to-r from-primary/10 to-secondary/10 
+            hover:from-primary/20 hover:to-secondary/20 transition-all duration-300
+            ${hasAvailableReward ? 'animate-pgbet-glow border-pgbet-gold' : ''}
+            w-full
+          `}
+        >
+          <Calendar className="w-4 h-4 mr-2" />
+          {symbols.brazilian.flag} Calendário Brasileiro {symbols.luck.sparkles}
+          
+          {/* Current streak indicator */}
+          {progress.currentStreak > 0 && (
+            <div className="flex items-center ml-2 gap-1">
+              <Flame className="w-3 h-3 text-pgbet-red" />
+              <span className="text-xs">{progress.currentStreak}</span>
+            </div>
+          )}
+          
+          {/* Available reward badge */}
+          {hasAvailableReward && (
+            <Badge 
+              variant="secondary" 
+              className="ml-2 animate-bounce-coin bg-pgbet-gold text-pgbet-dark"
+            >
+              Dia {formatNumber(today)} 🎁
+            </Badge>
+          )}
+          
+          {/* Active effects indicators */}
+          {activeMultiplier > 1 && (
+            <Badge 
+              variant="outline" 
+              className="ml-1 text-xs bg-pgbet-purple/20 text-pgbet-purple border-pgbet-purple/30"
+            >
+              {activeMultiplier}x
+            </Badge>
+          )}
+          
+          {activeTheme && (
+            <Badge 
+              variant="outline" 
+              className="ml-1 text-xs bg-pgbet-emerald/20 text-pgbet-emerald border-pgbet-emerald/30"
+            >
+              🎨
+            </Badge>
+          )}
+          
+          {/* Pulse effect for available rewards */}
+          {hasAvailableReward && (
+            <div className="absolute inset-0 rounded-md bg-pgbet-gold/10 animate-pulse pointer-events-none" />
+          )}
+        </Button>
+      </div>
 
       <VisualDailyBonusCalendar
         isOpen={isOpen}

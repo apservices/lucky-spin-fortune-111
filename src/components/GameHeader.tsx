@@ -2,6 +2,8 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Settings, Gift, Users, Star } from 'lucide-react';
+import { useLocalization } from '@/hooks/useLocalization';
+import { BrazilianColorStripe } from './BrazilianCulturalSymbols';
 import dragonWheel from '@/assets/dragon-wheel.jpg';
 
 interface GameHeaderProps {
@@ -19,9 +21,11 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
   onOpenRewards,
   onOpenLeaderboard
 }) => {
+  const { t, getWelcomeMessage, symbols } = useLocalization();
   return (
-    <header className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-md border-b border-border/50 p-4">
-      <div className="flex items-center justify-between max-w-6xl mx-auto">
+    <header className="bg-gradient-to-r from-card/80 to-card/60 backdrop-blur-md border-b border-border/50 p-4 relative overflow-hidden">
+      <BrazilianColorStripe className="absolute top-0 left-0 w-full opacity-30" />
+      <div className="flex items-center justify-between max-w-6xl mx-auto relative z-10">
         {/* Logo and Title */}
         <div className="flex items-center space-x-3">
           <div 
@@ -29,11 +33,11 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
             style={{ backgroundImage: `url(${dragonWheel})` }}
           />
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-gold bg-clip-text text-transparent">
-              Lucky Spin Fortune
+            <h1 className="text-2xl font-bold bg-gradient-gold bg-clip-text text-transparent flex items-center gap-2">
+              {symbols.brazilian.flag} Fortuna Brasileira {symbols.luck.sparkles}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Bem-vindo, <span className="text-primary font-medium">{playerName}</span>
+              {getWelcomeMessage(playerName)}
             </p>
           </div>
         </div>
@@ -42,7 +46,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
         <div className="hidden md:flex items-center space-x-2">
           <Star className="w-5 h-5 text-primary" />
           <Badge variant="outline" className="bg-primary/10 border-primary/30">
-            Nível {level}
+            {t('ui.level')} {level}
           </Badge>
         </div>
 
@@ -55,7 +59,7 @@ export const GameHeader: React.FC<GameHeaderProps> = ({
             className="hidden sm:flex hover:bg-primary/10"
           >
             <Gift className="w-4 h-4 mr-2" />
-            Recompensas
+            {t('ui.rewards')}
           </Button>
           
           <Button
