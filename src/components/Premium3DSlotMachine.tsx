@@ -3,14 +3,14 @@
  * Features advanced 3D sprites, smooth animations, and optimized performance
  */
 
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { SpriteComponent, SYMBOL_SPRITES, SpriteSymbol } from '@/components/SpriteSystem';
 import { useGameState, useGameActions } from '@/systems/GameStateSystem';
 import { gameEvents, GameEventType } from '@/systems/EventSystem';
-import { OptimizedParticleSystem } from '@/components/OptimizedParticleSystem';
+import { PremiumParticleCanvas, PremiumParticleCanvasRef } from '@/components/PremiumParticleCanvas';
 import { PlayCircle, Settings, Zap, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -30,6 +30,7 @@ interface WinLine {
 export const Premium3DSlotMachine: React.FC = () => {
   const { state } = useGameState();
   const { completeSpin, spendCoins, addCoins } = useGameActions();
+  const particleCanvasRef = useRef<PremiumParticleCanvasRef>(null);
   
   // Game state
   const [reels, setReels] = useState<SlotReel[]>([]);
@@ -39,7 +40,7 @@ export const Premium3DSlotMachine: React.FC = () => {
   const [betAmount, setBetAmount] = useState(10);
   const [autoSpin, setAutoSpin] = useState(false);
   const [turboMode, setTurboMode] = useState(false);
-  const [particleTrigger, setParticleTrigger] = useState(0);
+  const [slotMachineRef, setSlotMachineRef] = useState<HTMLDivElement | null>(null);
 
   // Initialize reels
   useEffect(() => {
@@ -190,8 +191,23 @@ export const Premium3DSlotMachine: React.FC = () => {
       // Add winnings
       addCoins(totalWin);
       
-      // Trigger particle effects
-      setParticleTrigger(prev => prev + 1);
+      // Trigger premium particle effects
+      if (slotMachineRef && particleCanvasRef.current) {
+        const rect = slotMachineRef.getBoundingClientRect();
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        if (totalWin > betAmount * 20) {
+          // Jackpot effect
+          particleCanvasRef.current.emitJackpotEffect(centerX, centerY, 3);
+        } else if (totalWin > betAmount * 5) {
+          // Big win effect
+          particleCanvasRef.current.emitWinEffect(centerX, centerY, 2);
+        } else {
+          // Regular win effect
+          particleCanvasRef.current.emitCoinBurst(centerX, centerY, 1);
+        }
+      }
       
       // Emit win event
       gameEvents.emit(GameEventType.WIN, { 
@@ -210,7 +226,7 @@ export const Premium3DSlotMachine: React.FC = () => {
   }, [
     isSpinning, state.coins, betAmount, reels, turboMode, 
     spendCoins, addCoins, getWeightedRandomSymbol, 
-    checkWinningLines, completeSpin
+    checkWinningLines, completeSpin, slotMachineRef
   ]);
 
   // Auto-spin functionality
@@ -255,14 +271,14 @@ export const Premium3DSlotMachine: React.FC = () => {
     )), [reels, winLines, lastWin, betAmount, isSpinning]);
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-background to-secondary/10 border-2 border-primary/20">
-      <OptimizedParticleSystem
-        trigger={particleTrigger}
-        type={lastWin > betAmount * 20 ? 'jackpot' : 'win'}
-        intensity={Math.min(lastWin / betAmount, 5)}
-        centerX={50}
-        centerY={40}
+    <div className="relative" ref={setSlotMachineRef}>
+      {/* Premium Particle System */}
+      <PremiumParticleCanvas
+        ref={particleCanvasRef}
+        className="absolute inset-0 pointer-events-none z-20"
       />
+      
+      <Card className="p-6 bg-gradient-to-br from-background to-secondary/10 border-2 border-primary/20 relative z-10">
       
       {/* Header */}
       <div className="text-center mb-6">
@@ -358,5 +374,6 @@ export const Premium3DSlotMachine: React.FC = () => {
         </Button>
       </div>
     </Card>
+    </div>
   );
 };
