@@ -20,7 +20,8 @@ import {
   Star,
   Crown,
   Gamepad2,
-  TrendingUp
+  TrendingUp,
+  Coins
 } from 'lucide-react';
 
 const GameLobby: React.FC = () => {
@@ -46,6 +47,13 @@ const GameLobby: React.FC = () => {
       action: handleStartGame,
       primary: true,
       disabled: isLoading
+    },
+    {
+      title: 'Loja de Moedas',
+      subtitle: 'Adquirir moedas virtuais',
+      icon: Coins,
+      action: () => navigate('/coin-store'),
+      badge: 'Virtual'
     },
     {
       title: 'Conquistas',

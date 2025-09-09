@@ -1,9 +1,10 @@
 /**
- * Global Game State Management System
+ * Global Game State Management System with Transaction History
  * Centralized state management using Context API pattern
  */
 
-import React, { createContext, useContext, useReducer, ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, ReactNode, useEffect } from 'react';
+import { useTransactionHistory } from '@/hooks/useTransactionHistory';
 
 // Game State Types
 export interface GameState {

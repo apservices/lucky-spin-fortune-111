@@ -11,6 +11,7 @@ import DailyRewardsPage from '@/pages/DailyRewardsPage';
 import ReferralsPage from '@/pages/ReferralsPage';
 import VIPPage from '@/pages/VIPPage';
 import SettingsPage from '@/pages/SettingsPage';
+import CoinStorePage from '@/pages/CoinStorePage';
 import AnalyticsPage from '@/pages/admin/Analytics';
 import NotFound from '@/pages/NotFound';
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="/referrals" element={<ReferralsPage />} />
             <Route path="/vip" element={<VIPPage />} />
             <Route path="/settings" element={<SettingsPage />} />
+            <Route path="/coin-store" element={<CoinStorePage />} />
             <Route path="/admin/analytics" element={<AnalyticsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
