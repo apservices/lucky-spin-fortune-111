@@ -16,6 +16,10 @@ import { VIPSystem } from './VIPSystem';
 import { GameStats } from './GameStats';
 import { CalendarRewardSystem } from './CalendarRewardSystem';
 import { GameSettingsPanel } from './GameSettingsPanel';
+import { Leaderboard } from './Leaderboard';
+import { ReferralSystem } from './ReferralSystem';
+import { VictorySharing } from './VictorySharing';
+import { CommunityEvents } from './CommunityEvents';
 import { SpriteSystem } from './SpriteSystem';
 import { DragonMascot } from './DragonMascot';
 import { OptimizedParticleSystem } from './OptimizedParticleSystem';
@@ -74,6 +78,21 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const [notifications, setNotifications] = useState<string[]>([]);
   const [activeGame, setActiveGame] = useState<string>('fortune-tiger');
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [victoryToShare, setVictoryToShare] = useState<{
+    amount: number;
+    multiplier: number;
+    symbols: string[];
+    playerName: string;
+    level: number;
+    timestamp: Date;
+  } | null>(null);
+  const [referrals, setReferrals] = useState<Array<{
+    id: string;
+    name: string;
+    level: number;
+    totalSpins: number;
+    joinDate: string;
+  }>>([]); // Mock referral data
   
   // Haptic feedback for level ups
   const gameHaptics = useGameHaptics();
@@ -213,6 +232,66 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
   const handleVIPBonus = (coins: number, energy: number) => {
     onCoinsChange(coins + coins);
     onEnergyChange(Math.min(energy + energy, maxEnergy));
+  };
+
+  const handleSlotWin = (amount: number, multiplier: number = 1) => {
+    onCoinsChange(coins + amount);
+    
+    // Auto-trigger victory sharing for big wins
+    if (amount >= 5000) { // Big win threshold for sharing
+      setVictoryToShare({
+        amount,
+        multiplier,
+        symbols: ['🐉', '🏆', '💎'], // Default symbols
+        playerName: 'Jogador', // In real app, get from user context
+        level,
+        timestamp: new Date()
+      });
+    }
+    
+    if (amount >= 1000) { // Big win threshold
+      const message = amount >= 10000 ? 'celebration' : 'bigWin';
+      toast.success(getExpression(message), {
+        description: `Você ganhou ${formatCurrency(amount)} moedas!`,
+        duration: 4000,
+        style: {
+          background: 'linear-gradient(45deg, hsl(var(--fortune-gold)), hsl(var(--fortune-ember)))',
+          color: 'hsl(var(--fortune-dark))',
+          border: '1px solid hsl(var(--fortune-gold))',
+        }
+      });
+    }
+  };
+
+  const handleAddReferral = (code: string) => {
+    const newReferral = {
+      id: `ref_${Date.now()}`,
+      name: `Amigo${referrals.length + 1}`,
+      level: Math.floor(Math.random() * 10) + 1,
+      totalSpins: Math.floor(Math.random() * 1000),
+      joinDate: new Date().toISOString()
+    };
+    setReferrals([...referrals, newReferral]);
+    toast.success('🎉 Novo amigo adicionado!');
+  };
+
+  const handleClaimReferralReward = (reward: number) => {
+    onCoinsChange(coins + reward);
+    toast.success(`🎁 Recompensa de indicação recebida: ${formatCurrency(reward)} moedas!`);
+  };
+
+  const handleJoinTournament = (tournamentId: string, entryFee: number) => {
+    if (coins >= entryFee) {
+      onCoinsChange(coins - entryFee);
+      toast.success(`🏆 Você entrou no torneio! Taxa de entrada: ${formatCurrency(entryFee)}`);
+    } else {
+      toast.error('Moedas insuficientes para entrar no torneio!');
+    }
+  };
+
+  const handleClaimGoalReward = (goalId: string, reward: number) => {
+    onCoinsChange(coins + reward);
+    toast.success(`🎯 Meta comunitária completa! Você ganhou ${formatCurrency(reward)} moedas!`);
   };
 
   const canPlayGame = (gameMinLevel: number) => level >= gameMinLevel;
@@ -413,30 +492,42 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6 mb-6">
+          <TabsList className="grid w-full grid-cols-9 mb-6">
             <TabsTrigger value="games" className="flex items-center space-x-2">
               <Gamepad2 className="w-4 h-4" />
-              <span>{t('ui.games')}</span>
+              <span className="hidden sm:inline">{t('ui.games')}</span>
             </TabsTrigger>
             <TabsTrigger value="missions" className="flex items-center space-x-2">
               <Target className="w-4 h-4" />
-              <span>{t('ui.missions')}</span>
+              <span className="hidden sm:inline">{t('ui.missions')}</span>
             </TabsTrigger>
             <TabsTrigger value="collectibles" className="flex items-center space-x-2">
               <Gem className="w-4 h-4" />
-              <span>{t('ui.collectibles')}</span>
+              <span className="hidden sm:inline">{t('ui.collectibles')}</span>
             </TabsTrigger>
             <TabsTrigger value="vip" className="flex items-center space-x-2">
               <Crown className="w-4 h-4" />
-              <span>{t('ui.vip')}</span>
+              <span className="hidden sm:inline">{t('ui.vip')}</span>
             </TabsTrigger>
             <TabsTrigger value="rewards" className="flex items-center space-x-2">
               <Gift className="w-4 h-4" />
-              <span>{t('ui.rewards')}</span>
+              <span className="hidden sm:inline">{t('ui.rewards')}</span>
             </TabsTrigger>
             <TabsTrigger value="stats" className="flex items-center space-x-2">
               <Trophy className="w-4 h-4" />
-              <span>{t('ui.stats')}</span>
+              <span className="hidden sm:inline">{t('ui.stats')}</span>
+            </TabsTrigger>
+            <TabsTrigger value="leaderboard" className="flex items-center space-x-2">
+              <Trophy className="w-4 h-4" />
+              <span className="hidden sm:inline">Ranking</span>
+            </TabsTrigger>
+            <TabsTrigger value="community" className="flex items-center space-x-2">
+              <Users className="w-4 h-4" />
+              <span className="hidden sm:inline">Eventos</span>
+            </TabsTrigger>
+            <TabsTrigger value="referrals" className="flex items-center space-x-2">
+              <Gift className="w-4 h-4" />
+              <span className="hidden sm:inline">Indicações</span>
             </TabsTrigger>
           </TabsList>
 
@@ -565,6 +656,38 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
               maxDailySpins={50}
             />
           </TabsContent>
+
+          <TabsContent value="leaderboard" className="space-y-6">
+            <Leaderboard
+              currentPlayer={{
+                name: "Jogador",
+                level,
+                totalCoins: coins,
+                totalSpins,
+                referrals: referrals.length,
+                weeklySpins: totalSpins % 100 // Mock weekly spins
+              }}
+            />
+          </TabsContent>
+
+          <TabsContent value="community" className="space-y-6">
+            <CommunityEvents
+              playerLevel={level}
+              playerCoins={coins}
+              onJoinTournament={handleJoinTournament}
+              onClaimGoalReward={handleClaimGoalReward}
+            />
+          </TabsContent>
+
+          <TabsContent value="referrals" className="space-y-6">
+            <ReferralSystem
+              playerName="Jogador" // In a real app, get from user context
+              referralCode="LUCKY123" // Generate unique code
+              referrals={referrals}
+              onAddReferral={handleAddReferral}
+              onClaimReferralReward={handleClaimReferralReward}
+            />
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -579,6 +702,12 @@ export const EnhancedGameHub: React.FC<EnhancedGameHubProps> = ({
         <GameSettingsPanel
           isOpen={settingsOpen}
           onOpenChange={setSettingsOpen}
+        />
+
+        {/* Victory Sharing Modal */}
+        <VictorySharing
+          victory={victoryToShare}
+          onClose={() => setVictoryToShare(null)}
         />
       </div>
     </HapticProvider>
