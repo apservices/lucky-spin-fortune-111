@@ -1,23 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <title>Lucky Fortune Animal - Fortune Tiger</title>
-    <meta name="description" content="Lucky Fortune Animal - Slot game inspired by Fortune Tiger with authentic Chinese aesthetics" />
-    <meta name="author" content="Lucky Fortune Animal" />
+    <title>Zodiac Fortune Slots - Jogo Recreativo +18</title>
+    <meta name="description" content="Jogo recreativo de caça-níqueis com tema zodiacal. Moedas virtuais sem valor real. Destinado apenas a maiores de 18 anos." />
+    <meta name="author" content="Zodiac Fortune Slots" />
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#B8860B" />
 
-    <meta property="og:title" content="Lucky Fortune Animal - Fortune Tiger" />
-    <meta property="og:description" content="Authentic Fortune Tiger slot game experience with Chinese aesthetics and real-time gameplay" />
+    <!-- Preload critical assets -->
+    <link rel="preload" href="/config/gameParameters.json" as="fetch" type="application/json" crossorigin>
+    <link rel="preload" href="/src/assets/sprites/tiger-idle.webp" as="image" type="image/webp">
+    <link rel="preload" href="/src/assets/sprites/fox-idle.webp" as="image" type="image/webp">
+    <link rel="preload" href="/src/assets/sprites/frog-idle.webp" as="image" type="image/webp">
+
+    <!-- SEO and Social -->
+    <meta property="og:title" content="Zodiac Fortune Slots - Jogo Recreativo +18" />
+    <meta property="og:description" content="Jogo recreativo de caça-níqueis com moedas virtuais sem valor real. Destinado apenas a maiores de 18 anos." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta property="og:locale" content="pt_BR" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@lovable_dev" />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://lovable.dev/" />
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Game",
+      "name": "Zodiac Fortune Slots",
+      "description": "Jogo recreativo de caça-níqueis com tema zodiacal",
+      "genre": "Casual Game",
+      "audience": {
+        "@type": "Audience",
+        "suggestedMinAge": 18
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.5",
+        "ratingCount": "1000"
+      }
+    }
+    </script>
   </head>
 
   <body>

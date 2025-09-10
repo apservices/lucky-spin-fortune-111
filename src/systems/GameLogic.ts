@@ -5,6 +5,7 @@
 
 import { gameEvents, GameEventType } from './EventSystem';
 import { useLocalization } from '@/hooks/useLocalization';
+import { configSystem } from './ConfigSystem';
 
 // Symbol definitions
 export interface GameSymbol {
@@ -144,27 +145,23 @@ export class GameLogic {
   }
 
   /**
-   * Generate symbol weights based on rarity
+   * Generate symbol weights based on configuration
    */
-  private getSymbolWeights(): Array<{ symbol: GameSymbol; weight: number }> {
-    const weights = Object.values(GAME_SYMBOLS).map(symbol => {
-      switch (symbol.rarity) {
-        case 'common': return { symbol, weight: 60 };
-        case 'rare': return { symbol, weight: 25 };
-        case 'epic': return { symbol, weight: 12 };
-        case 'legendary': return { symbol, weight: 3 };
-        default: return { symbol, weight: 1 };
-      }
-    });
-
-    return weights;
+  private async getSymbolWeights(): Promise<Array<{ symbol: GameSymbol; weight: number }>> {
+    await configSystem.ensureLoaded();
+    const probabilities = configSystem.getSymbolProbabilities();
+    
+    return Object.values(GAME_SYMBOLS).map(symbol => ({
+      symbol,
+      weight: probabilities[symbol.id] || 0.01 // Fallback weight
+    }));
   }
 
   /**
    * Select a random symbol based on weighted probabilities
    */
-  private selectRandomSymbol(): GameSymbol {
-    const weights = this.getSymbolWeights();
+  private async selectRandomSymbol(): Promise<GameSymbol> {
+    const weights = await this.getSymbolWeights();
     const totalWeight = weights.reduce((sum, w) => sum + w.weight, 0);
     
     let random = this.rng() * totalWeight;
@@ -183,14 +180,14 @@ export class GameLogic {
   /**
    * Generate a random grid of symbols
    */
-  private generateSymbolGrid(): string[][] {
+  private async generateSymbolGrid(): Promise<string[][]> {
     const { rows, cols } = this.config.gridSize;
     const grid: string[][] = [];
     
     for (let row = 0; row < rows; row++) {
       grid[row] = [];
       for (let col = 0; col < cols; col++) {
-        const symbol = this.selectRandomSymbol();
+        const symbol = await this.selectRandomSymbol();
         grid[row][col] = symbol.id;
       }
     }
@@ -340,7 +337,7 @@ export class GameLogic {
   /**
    * Perform a spin and return the result
    */
-  public spin(playerLevel: number = 1, gameId: string = 'default'): SpinResult {
+  public async spin(playerLevel: number = 1, gameId: string = 'default'): Promise<SpinResult> {
     // Emit spin start event
     gameEvents.emit(GameEventType.SPIN_START, {
       gameId,
@@ -349,7 +346,7 @@ export class GameLogic {
     });
     
     // Generate symbol grid
-    const symbols = this.generateSymbolGrid();
+    const symbols = await this.generateSymbolGrid();
     
     // Find winning lines
     const winLines = this.findWinLines(symbols);

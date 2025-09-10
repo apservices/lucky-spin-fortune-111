@@ -4,12 +4,15 @@ interface AssetCacheItem {
   lastUsed: number;
   priority: 'critical' | 'normal' | 'low';
   size: number;
+  ttl: number; // Time to live in milliseconds
+  expires: number; // Expiration timestamp
 }
 
 interface AssetLoadOptions {
   priority?: 'critical' | 'normal' | 'low';
   preload?: boolean;
   webpFallback?: boolean;
+  ttl?: number; // Time to live in milliseconds (default 1 hour)
 }
 
 class AssetManager {
@@ -130,20 +133,23 @@ class AssetManager {
     return (duration * estimatedBitrate) / 8; // Convert to bytes
   }
 
-  private addToCache(url: string, asset: HTMLImageElement | HTMLAudioElement, priority: 'critical' | 'normal' | 'low', size: number) {
+  private addToCache(url: string, asset: HTMLImageElement | HTMLAudioElement, priority: 'critical' | 'normal' | 'low', size: number, ttl: number = 3600000) {
     // Remove existing item if it exists
     if (this.cache.has(url)) {
       const existing = this.cache.get(url)!;
       this.currentCacheSize -= existing.size;
     }
 
+    const now = Date.now();
     // Add new item
     this.cache.set(url, {
       url,
       asset,
-      lastUsed: Date.now(),
+      lastUsed: now,
       priority,
-      size
+      size,
+      ttl,
+      expires: now + ttl
     });
 
     this.currentCacheSize += size;
