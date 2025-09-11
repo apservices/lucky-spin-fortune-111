@@ -4,6 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { ConsentBanner } from '@/components/analytics/ConsentBanner';
 import { GameTransition } from '@/components/GameTransition';
 import { PerformanceDebugger } from '@/components/PerformanceDebugger';
+import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { Suspense, lazy } from 'react';
 import { AgeVerification } from '@/components/AgeVerification';
 import { ResponsibleGamingWarnings } from '@/components/ResponsibleGamingWarnings';
@@ -64,7 +65,8 @@ function App() {
         </GameTransition>
         <Toaster />
         <ConsentBanner />
-        <PerformanceDebugger />
+        <PWAInstallPrompt />
+        {import.meta.env.MODE === 'development' && <PerformanceDebugger />}
       </Router>
     </GameStateProvider>
   );

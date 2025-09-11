@@ -162,28 +162,24 @@ export const ResponsibleGamingWarnings: React.FC = () => {
           >
             <div className="container mx-auto px-4 py-2">
               <div className="flex items-center justify-between text-sm">
-                <div className="flex items-center space-x-4">
-                  <div className="flex items-center space-x-2">
-                    <Info className="w-4 h-4 text-primary" />
-                    <span className="font-medium">Jogo recreativo +18</span>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Info className="w-4 h-4 text-primary" />
+                      <span className="font-medium">Jogo recreativo +18</span>
+                    </div>
+                    <span className="text-muted-foreground">|</span>
+                    <Button
+                      variant="link"
+                      size="sm"
+                      className="h-auto p-0 text-primary"
+                      onClick={() => {
+                        // Navigate to responsible gaming page
+                        window.location.href = '/responsible-gaming';
+                      }}
+                    >
+                      Jogo Responsável
+                    </Button>
                   </div>
-                  <span className="text-muted-foreground">|</span>
-                  <span className="text-muted-foreground">
-                    Moedas virtuais sem valor real
-                  </span>
-                  <span className="text-muted-foreground">|</span>
-                  <Button
-                    variant="link"
-                    size="sm"
-                    className="h-auto p-0 text-primary"
-                    onClick={() => {
-                      // Navigate to responsible gaming page
-                      window.location.href = '/responsible-gaming';
-                    }}
-                  >
-                    Jogo Responsável
-                  </Button>
-                </div>
                 
                 <Button
                   onClick={() => setShowFooter(false)}
