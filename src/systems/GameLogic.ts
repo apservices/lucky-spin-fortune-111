@@ -414,12 +414,12 @@ export class GameLogic {
   /**
    * Calculate RTP (Return to Player) percentage
    */
-  public calculateRTP(sampleSize: number = 10000, playerLevel: number = 1): number {
+  public async calculateRTP(sampleSize: number = 10000, playerLevel: number = 1): Promise<number> {
     let totalWins = 0;
     let totalCost = sampleSize * this.config.baseSpinCost;
     
     for (let i = 0; i < sampleSize; i++) {
-      const result = this.spin(playerLevel, 'rtp-calculation');
+      const result = await this.spin(playerLevel, 'rtp-calculation');
       totalWins += result.totalWin;
     }
     
