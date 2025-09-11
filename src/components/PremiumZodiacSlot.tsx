@@ -122,8 +122,9 @@ export const PremiumZodiacSlot: React.FC<PremiumZodiacSlotProps> = ({
     };
     
     generateFloatingCoins();
-    const interval = setInterval(generateFloatingCoins, 15000);
-    return () => clearInterval(interval);
+    // Disable floating coins interval to improve performance
+    // const interval = setInterval(generateFloatingCoins, 15000);
+    // return () => clearInterval(interval);
   }, []);
 
   // Auto-spin logic

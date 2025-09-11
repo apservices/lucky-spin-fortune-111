@@ -307,6 +307,13 @@ class ConfigurationSystem {
   }
 
   /**
+   * Check if configuration is loaded
+   */
+  public isConfigLoaded(): boolean {
+    return this.isLoaded;
+  }
+
+  /**
    * Utility: Get sum of symbol probabilities (for validation)
    */
   private getSymbolProbabilitiesSum(): number {

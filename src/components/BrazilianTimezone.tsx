@@ -16,10 +16,11 @@ export const BrazilianTimezone: React.FC<BrazilianTimezoneProps> = ({
   const [timeUntilReset, setTimeUntilReset] = useState(timeUntilMidnightBrasilia());
 
   useEffect(() => {
+    // Update every 30 seconds instead of every second to reduce CPU load
     const interval = setInterval(() => {
       setCurrentTime(getBrasiliaTime());
       setTimeUntilReset(timeUntilMidnightBrasilia());
-    }, 1000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);

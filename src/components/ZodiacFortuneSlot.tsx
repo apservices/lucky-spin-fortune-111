@@ -63,8 +63,9 @@ export const ZodiacFortuneSlot: React.FC<ZodiacFortuneSlotProps> = ({
     };
     
     generateFloatingCoins();
-    const interval = setInterval(generateFloatingCoins, 10000);
-    return () => clearInterval(interval);
+    // Disable floating coins interval to improve performance
+    // const interval = setInterval(generateFloatingCoins, 10000);
+    // return () => clearInterval(interval);
   }, []);
 
   const getRandomSymbol = (): Symbol => {

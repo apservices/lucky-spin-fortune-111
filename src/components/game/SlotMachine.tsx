@@ -20,10 +20,10 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({ gameId, onWin }) => {
   const { completeSpin } = useGameActions();
   const gameLogic = useGameLogic();
   
-  const handleSpin = async () => {
+  const handleSpin = () => {
     if (state.energy < 1) return;
     
-    const result = await gameLogic.spin(state.level, gameId);
+    const result = gameLogic.spin(state.level, gameId);
     completeSpin(result.totalWin, result.experienceGained);
     onWin?.(result.totalWin);
   };

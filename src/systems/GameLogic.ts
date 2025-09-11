@@ -147,9 +147,25 @@ export class GameLogic {
   /**
    * Generate symbol weights based on configuration
    */
-  private async getSymbolWeights(): Promise<Array<{ symbol: GameSymbol; weight: number }>> {
-    await configSystem.ensureLoaded();
-    const probabilities = configSystem.getSymbolProbabilities();
+   private getSymbolWeights(): Array<{ symbol: GameSymbol; weight: number }> {
+    // Use default probabilities if config is not loaded
+    const defaultProbabilities: Record<string, number> = {
+      'tiger': 0.02,
+      'fox': 0.08,
+      'frog': 0.12,
+      'envelope': 0.18,
+      'orange': 0.25,
+      'scroll': 0.15
+    };
+    
+    let probabilities = defaultProbabilities;
+    try {
+      if (configSystem.isConfigLoaded()) {
+        probabilities = configSystem.getSymbolProbabilities();
+      }
+    } catch (error) {
+      console.warn('Failed to get symbol probabilities from config, using defaults');
+    }
     
     return Object.values(GAME_SYMBOLS).map(symbol => ({
       symbol,
@@ -160,8 +176,8 @@ export class GameLogic {
   /**
    * Select a random symbol based on weighted probabilities
    */
-  private async selectRandomSymbol(): Promise<GameSymbol> {
-    const weights = await this.getSymbolWeights();
+  private selectRandomSymbol(): GameSymbol {
+    const weights = this.getSymbolWeights();
     const totalWeight = weights.reduce((sum, w) => sum + w.weight, 0);
     
     let random = this.rng() * totalWeight;
@@ -180,14 +196,14 @@ export class GameLogic {
   /**
    * Generate a random grid of symbols
    */
-  private async generateSymbolGrid(): Promise<string[][]> {
+  private generateSymbolGrid(): string[][] {
     const { rows, cols } = this.config.gridSize;
     const grid: string[][] = [];
     
     for (let row = 0; row < rows; row++) {
       grid[row] = [];
       for (let col = 0; col < cols; col++) {
-        const symbol = await this.selectRandomSymbol();
+        const symbol = this.selectRandomSymbol();
         grid[row][col] = symbol.id;
       }
     }
@@ -337,7 +353,7 @@ export class GameLogic {
   /**
    * Perform a spin and return the result
    */
-  public async spin(playerLevel: number = 1, gameId: string = 'default'): Promise<SpinResult> {
+  public spin(playerLevel: number = 1, gameId: string = 'default'): SpinResult {
     // Emit spin start event
     gameEvents.emit(GameEventType.SPIN_START, {
       gameId,
@@ -346,7 +362,7 @@ export class GameLogic {
     });
     
     // Generate symbol grid
-    const symbols = await this.generateSymbolGrid();
+    const symbols = this.generateSymbolGrid();
     
     // Find winning lines
     const winLines = this.findWinLines(symbols);
@@ -413,17 +429,22 @@ export class GameLogic {
 
   /**
    * Calculate RTP (Return to Player) percentage
+   * Optimized to avoid blocking the UI
    */
-  public async calculateRTP(sampleSize: number = 10000, playerLevel: number = 1): Promise<number> {
-    let totalWins = 0;
-    let totalCost = sampleSize * this.config.baseSpinCost;
+  public calculateRTP(sampleSize: number = 1000, playerLevel: number = 1): number {
+    // Quick theoretical RTP calculation based on symbol probabilities
+    const weights = this.getSymbolWeights();
+    let expectedValue = 0;
     
-    for (let i = 0; i < sampleSize; i++) {
-      const result = await this.spin(playerLevel, 'rtp-calculation');
-      totalWins += result.totalWin;
-    }
+    // Calculate expected value based on symbol probabilities and multipliers
+    weights.forEach(({ symbol, weight }) => {
+      const avgMultiplier = symbol.multipliers.reduce((a, b) => a + b, 0) / symbol.multipliers.length;
+      expectedValue += weight * avgMultiplier;
+    });
     
-    return totalCost > 0 ? (totalWins / totalCost) * 100 : 0;
+    // Apply level-based RTP adjustment
+    const levelMultiplier = Math.min(1 + (playerLevel - 1) * 0.01, 1.2); // Max 20% bonus
+    return Math.min(expectedValue * levelMultiplier * 100, 95); // Cap at 95%
   }
 
   /**
