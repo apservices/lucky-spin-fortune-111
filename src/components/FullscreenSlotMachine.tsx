@@ -277,85 +277,81 @@ export const FullscreenSlotMachine: React.FC = () => {
         className="absolute inset-0 pointer-events-none z-20"
       />
       
-      {/* HUD - Top 15% */}
-      <header className="h-[15vh] w-full bg-gradient-to-b from-black/30 to-transparent backdrop-blur-sm border-b border-primary/20 relative z-30">
+      {/* HUD - Top 12% */}
+      <header className="h-[12vh] w-full bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm border-b border-primary/20 relative z-30">
         <div className="h-full flex items-center justify-between px-4 py-2">
           {/* Left Stats */}
-          <div className="flex flex-col gap-1">
-            <Badge variant="outline" className="text-sm px-2 py-1 bg-black/50 border-yellow-500/50">
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="text-lg px-3 py-2 bg-black/60 border-yellow-500/50">
               <span className="text-yellow-400">💰</span>
-              <span className="ml-1 text-white font-bold">{state.coins.toLocaleString()}</span>
+              <span className="ml-2 text-white font-bold">{state.coins.toLocaleString()}</span>
             </Badge>
-            <Badge variant="outline" className="text-sm px-2 py-1 bg-black/50 border-blue-500/50">
+            <Badge variant="outline" className="text-lg px-3 py-2 bg-black/60 border-blue-500/50">
               <span className="text-blue-400">⚡</span>
-              <span className="ml-1 text-white font-bold">{state.energy}</span>
+              <span className="ml-2 text-white font-bold">{state.energy}</span>
             </Badge>
           </div>
 
           {/* Center Title */}
           <div className="text-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-red-600 bg-clip-text text-transparent">
               🐅 Zodiac Fortune
             </h1>
             {lastWin > 0 && (
-              <div className="text-lg font-bold text-green-400 animate-pulse">
+              <div className="text-xl font-bold text-green-400 animate-pulse">
                 +{lastWin.toLocaleString()}
               </div>
             )}
           </div>
 
           {/* Right Stats */}
-          <div className="flex flex-col gap-1">
-            <Badge variant="outline" className="text-sm px-2 py-1 bg-black/50 border-purple-500/50">
+          <div className="flex items-center gap-3">
+            <Badge variant="outline" className="text-lg px-3 py-2 bg-black/60 border-purple-500/50">
               <span className="text-purple-400">🎯</span>
-              <span className="ml-1 text-white font-bold">Nv.{state.level}</span>
-            </Badge>
-            <Badge variant="outline" className="text-sm px-2 py-1 bg-black/50 border-green-500/50">
-              <span className="text-green-400">⭐</span>
-              <span className="ml-1 text-white font-bold">{state.experience}</span>
+              <span className="ml-2 text-white font-bold">Nv.{state.level}</span>
             </Badge>
           </div>
         </div>
       </header>
 
-      {/* Game Area - Center 60% */}
-      <main className="h-[60vh] w-full flex items-center justify-center relative z-10 px-4">
-        <div className="w-full max-w-sm aspect-square bg-gradient-to-br from-black/40 to-purple-900/40 backdrop-blur-md rounded-2xl border-2 border-primary/30 p-4 shadow-2xl">
+      {/* Game Area - Center 50% */}
+      <main className="h-[50vh] w-full flex items-center justify-center relative z-10 px-4">
+        <div className="w-full max-w-lg aspect-square bg-gradient-to-br from-black/50 to-purple-900/50 backdrop-blur-md rounded-3xl border-2 border-primary/40 p-6 shadow-2xl">
           {/* Win Lines Indicator */}
           {winLines.length > 0 && (
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-40">
-              <Badge className="text-lg px-4 py-2 bg-gradient-to-r from-yellow-400 to-orange-500 animate-bounce shadow-lg">
+            <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 z-40">
+              <Badge className="text-xl px-6 py-3 bg-gradient-to-r from-yellow-400 to-orange-500 animate-bounce shadow-lg">
                 🎉 {winLines.length} linha{winLines.length > 1 ? 's' : ''}!
               </Badge>
             </div>
           )}
 
-          {/* 3x3 Slot Grid */}
-          <div className="grid grid-cols-3 gap-3 h-full w-full">
+          {/* 3x3 Slot Grid - Larger symbols */}
+          <div className="grid grid-cols-3 gap-4 h-full w-full">
             {reelElements}
           </div>
         </div>
       </main>
 
-      {/* Controls - Bottom 25% */}
-      <footer className="h-[25vh] w-full bg-gradient-to-t from-black/50 to-transparent backdrop-blur-sm border-t border-primary/20 relative z-30">
-        <div className="h-full flex flex-col justify-center px-4 py-2 gap-4">
+      {/* Controls - Bottom 38% - More Prominent */}
+      <footer className="h-[38vh] w-full bg-gradient-to-t from-black/70 to-transparent backdrop-blur-sm border-t border-primary/30 relative z-30">
+        <div className="h-full flex flex-col justify-center px-6 py-4 gap-6">
           
-          {/* Bet Controls */}
-          <div className="flex items-center justify-center gap-4">
+          {/* Bet Controls - Larger and more visible */}
+          <div className="flex items-center justify-center gap-6">
             <Button
               variant="outline"
               size="lg"
               onClick={() => adjustBet(-5)}
               disabled={isSpinning || betAmount <= 1}
-              className="h-12 w-12 rounded-full bg-black/50 border-red-500/50 hover:bg-red-500/20"
+              className="h-16 w-16 rounded-full bg-black/60 border-red-500/50 hover:bg-red-500/30 text-red-400 font-bold text-xl"
             >
-              <Minus className="w-6 h-6 text-red-400" />
+              <Minus className="w-8 h-8" />
             </Button>
             
-            <div className="text-center">
-              <div className="text-sm text-gray-400">Aposta</div>
-              <Badge variant="secondary" className="text-xl px-4 py-2 bg-black/70 text-yellow-400 font-bold">
+            <div className="text-center bg-black/60 backdrop-blur-sm rounded-2xl px-6 py-4 border border-primary/30">
+              <div className="text-lg text-gray-300 mb-1">Aposta</div>
+              <Badge variant="secondary" className="text-3xl px-6 py-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-black font-bold">
                 {betAmount}
               </Badge>
             </div>
@@ -365,30 +361,31 @@ export const FullscreenSlotMachine: React.FC = () => {
               size="lg"
               onClick={() => adjustBet(5)}
               disabled={isSpinning}
-              className="h-12 w-12 rounded-full bg-black/50 border-green-500/50 hover:bg-green-500/20"
+              className="h-16 w-16 rounded-full bg-black/60 border-green-500/50 hover:bg-green-500/30 text-green-400 font-bold text-xl"
             >
-              <Plus className="w-6 h-6 text-green-400" />
+              <Plus className="w-8 h-8" />
             </Button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center justify-center gap-3">
+          {/* Action Buttons - Much larger and more prominent */}
+          <div className="flex items-center justify-center gap-4">
             <Button
               variant={turboMode ? "default" : "outline"}
               onClick={() => setTurboMode(!turboMode)}
               disabled={isSpinning}
-              className="h-14 px-4 bg-black/50 border-orange-500/50 hover:bg-orange-500/20"
+              className="h-16 px-6 bg-black/60 border-orange-500/50 hover:bg-orange-500/30 text-orange-400 font-bold"
             >
-              <Zap className="w-5 h-5 mr-2 text-orange-400" />
-              <span className="text-white font-medium">Turbo</span>
+              <Zap className="w-6 h-6 mr-2" />
+              <span className="text-lg">TURBO</span>
             </Button>
             
+            {/* MAIN SPIN BUTTON - Extra Large and Prominent */}
             <Button
               onClick={handleSpin}
               disabled={isSpinning || state.coins < betAmount || state.energy < 1}
-              className="h-16 px-8 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold text-xl shadow-lg transform active:scale-95 transition-all duration-150"
+              className="h-20 px-12 bg-gradient-to-r from-yellow-500 to-orange-600 hover:from-yellow-600 hover:to-orange-700 text-black font-bold text-2xl shadow-lg transform active:scale-95 transition-all duration-150 border-2 border-yellow-300"
             >
-              <PlayCircle className="w-6 h-6 mr-2" />
+              <PlayCircle className="w-8 h-8 mr-3" />
               {isSpinning ? 'GIRANDO...' : 'SPIN'}
             </Button>
             
@@ -396,11 +393,21 @@ export const FullscreenSlotMachine: React.FC = () => {
               variant={autoSpin ? "default" : "outline"}
               onClick={() => setAutoSpin(!autoSpin)}
               disabled={isSpinning}
-              className="h-14 px-4 bg-black/50 border-blue-500/50 hover:bg-blue-500/20"
+              className="h-16 px-6 bg-black/60 border-blue-500/50 hover:bg-blue-500/30 text-blue-400 font-bold"
             >
-              <RotateCcw className="w-5 h-5 mr-2 text-blue-400" />
-              <span className="text-white font-medium">Auto</span>
+              <RotateCcw className="w-6 h-6 mr-2" />
+              <span className="text-lg">AUTO</span>
             </Button>
+          </div>
+
+          {/* Game Status Bar */}
+          <div className="text-center text-white/80">
+            <div className="text-lg">
+              {state.energy < 1 && <span className="text-red-400">⚡ Energia insuficiente</span>}
+              {state.coins < betAmount && <span className="text-red-400">💰 Moedas insuficientes</span>}
+              {state.energy >= 1 && state.coins >= betAmount && !isSpinning && <span className="text-green-400">✓ Pronto para jogar</span>}
+              {isSpinning && <span className="text-yellow-400 animate-pulse">🎰 Girando...</span>}
+            </div>
           </div>
         </div>
       </footer>

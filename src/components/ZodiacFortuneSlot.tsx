@@ -302,54 +302,79 @@ export const ZodiacFortuneSlot: React.FC<ZodiacFortuneSlotProps> = ({
           </div>
         )}
 
-        {/* Controls */}
-        <div className="space-y-4">
-          {/* Bet Controls */}
-          <div className="flex items-center justify-center space-x-4">
+        {/* Controls - More prominent positioning */}
+        <div className="space-y-6">
+          {/* Bet Controls - Larger and more visible */}
+          <div className="flex items-center justify-center space-x-6 bg-black/60 rounded-2xl p-4 border border-pgbet-gold/30">
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => adjustBet(false)}
               disabled={bet <= 25}
-              className="border-pgbet-gold text-pgbet-gold hover:bg-pgbet-gold/10"
+              className="h-12 w-12 rounded-full border-pgbet-gold text-pgbet-gold hover:bg-pgbet-gold/20 text-xl font-bold"
             >
               -
             </Button>
-            <span className="text-pgbet-gold font-bold min-w-[80px] text-center">
-              Aposta: {bet}
-            </span>
+            <div className="text-center bg-pgbet-gold/10 rounded-xl px-6 py-3 border border-pgbet-gold/30">
+              <div className="text-sm text-pgbet-gold/80 mb-1">APOSTA</div>
+              <div className="text-pgbet-gold font-bold text-2xl">{bet}</div>
+            </div>
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={() => adjustBet(true)}
               disabled={bet >= 500}
-              className="border-pgbet-gold text-pgbet-gold hover:bg-pgbet-gold/10"
+              className="h-12 w-12 rounded-full border-pgbet-gold text-pgbet-gold hover:bg-pgbet-gold/20 text-xl font-bold"
             >
               +
             </Button>
           </div>
 
-          {/* Action Buttons */}
-          <div className="grid grid-cols-2 gap-4">
+          {/* Action Buttons - Much larger and more prominent */}
+          <div className="grid grid-cols-1 gap-4">
+            {/* Main SPIN button - Extra large */}
             <Button
               onClick={spin}
               disabled={isSpinning || energy < 1 || coins < bet}
-              className="h-14 bg-pgbet-gradient-gold text-black font-bold text-lg hover:scale-105 transform transition-transform disabled:opacity-50"
+              className="h-20 bg-pgbet-gradient-gold text-black font-bold text-2xl hover:scale-105 transform transition-all duration-200 disabled:opacity-50 shadow-lg border-2 border-yellow-300"
             >
-              {isSpinning ? '🎰 GIRANDO...' : '🎰 GIRAR'}
+              {isSpinning ? '🎰 GIRANDO...' : '🎰 GIRAR AGORA'}
             </Button>
             
-            <Button
-              variant="outline"
-              onClick={() => setTurboMode(!turboMode)}
-              className={`h-14 border-2 font-bold ${
-                turboMode 
-                  ? 'border-pgbet-red bg-pgbet-red/20 text-pgbet-red' 
-                  : 'border-pgbet-purple text-pgbet-purple hover:bg-pgbet-purple/10'
-              }`}
-            >
-              {turboMode ? '⚡ TURBO ON' : '⚡ TURBO'}
-            </Button>
+            {/* Secondary controls */}
+            <div className="grid grid-cols-2 gap-4">
+              <Button
+                variant="outline"
+                onClick={() => setTurboMode(!turboMode)}
+                className={`h-14 border-2 font-bold text-lg ${
+                  turboMode 
+                    ? 'border-pgbet-red bg-pgbet-red/20 text-pgbet-red' 
+                    : 'border-pgbet-purple text-pgbet-purple hover:bg-pgbet-purple/10'
+                }`}
+              >
+                {turboMode ? '⚡ TURBO ON' : '⚡ MODO TURBO'}
+              </Button>
+              
+              <Button
+                variant="outline"
+                onClick={() => setAutoSpin(!autoSpin)}
+                className={`h-14 border-2 font-bold text-lg ${
+                  autoSpin 
+                    ? 'border-pgbet-emerald bg-pgbet-emerald/20 text-pgbet-emerald' 
+                    : 'border-gray-500 text-gray-300 hover:bg-gray-500/10'
+                }`}
+              >
+                {autoSpin ? '🔄 AUTO ON' : '🔄 AUTO SPIN'}
+              </Button>
+            </div>
+          </div>
+
+          {/* Status indicator */}
+          <div className="text-center p-3 bg-black/40 rounded-lg border border-primary/20">
+            {energy < 1 && <div className="text-red-400 font-bold">⚡ Energia insuficiente</div>}
+            {coins < bet && <div className="text-red-400 font-bold">💰 Moedas insuficientes</div>}
+            {energy >= 1 && coins >= bet && !isSpinning && <div className="text-green-400 font-bold">✓ Pronto para jogar</div>}
+            {isSpinning && <div className="text-yellow-400 font-bold animate-pulse">🎰 Girando...</div>}
           </div>
         </div>
 
