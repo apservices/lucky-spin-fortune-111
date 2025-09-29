@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { GameStateProvider } from '@/systems/GameStateSystem';
 import { Toaster } from '@/components/ui/sonner';
 import { ConsentBanner } from '@/components/analytics/ConsentBanner';
-import { GameTransition } from '@/components/GameTransition';
-import { PerformanceDebugger } from '@/components/PerformanceDebugger';
+import { GameTransitionManager } from '@/components/GameTransitionManager';
+import { OptimizedPerformanceManager } from '@/components/OptimizedPerformanceManager';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { Suspense, lazy } from 'react';
 import { AgeVerification } from '@/components/AgeVerification';
@@ -37,7 +37,7 @@ function App() {
       <Router>
         <AgeVerification onVerified={() => {}} />
         <ResponsibleGamingWarnings />
-        <GameTransition>
+        <GameTransitionManager>
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
           </div>}>
@@ -62,11 +62,11 @@ function App() {
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
-        </GameTransition>
+        </GameTransitionManager>
         <Toaster />
         <ConsentBanner />
         <PWAInstallPrompt />
-        {import.meta.env.MODE === 'development' && <PerformanceDebugger />}
+        <OptimizedPerformanceManager />
       </Router>
     </GameStateProvider>
   );

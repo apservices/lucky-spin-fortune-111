@@ -5,7 +5,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FullscreenSlotMachine } from '@/components/FullscreenSlotMachine';
+import { LazyGameComponent } from '@/components/OptimizedGameLazyLoader';
 import { SpriteSystem } from '@/components/SpriteSystem';
 import { GamePauseMenu } from '@/components/GamePauseMenu';
 import { GameSplashScreen } from '@/components/GameSplashScreen';
@@ -137,7 +137,7 @@ const GamePlay: React.FC = () => {
           exit={{ opacity: 0, scale: 1.05 }}
           transition={{ duration: 0.5, ease: "easeInOut" }}
         >
-          <FullscreenSlotMachine />
+          <LazyGameComponent component="fullscreen" />
         </motion.div>
 
         {/* Pause Menu Overlay */}
