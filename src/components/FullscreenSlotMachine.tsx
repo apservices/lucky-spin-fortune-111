@@ -270,7 +270,7 @@ export const FullscreenSlotMachine: React.FC = () => {
     )), [reels, winLines, lastWin, betAmount, isSpinning]);
 
   return (
-    <div className="h-screen w-full bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden relative flex flex-col" ref={slotMachineRef}>
+    <div className="h-screen w-full bg-premium-gold animate-premium-background overflow-hidden relative flex flex-col" ref={slotMachineRef}>
       {/* Premium Particle System */}
       <PremiumParticleCanvas
         ref={particleCanvasRef}

@@ -8,6 +8,7 @@ import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
 import { Suspense, lazy } from 'react';
 import { AgeVerification } from '@/components/AgeVerification';
 import { ResponsibleGamingWarnings } from '@/components/ResponsibleGamingWarnings';
+import { PremiumThemeProvider } from '@/components/PremiumThemeProvider';
 
 // Core components (always loaded)
 import GameLobby from '@/pages/GameLobby';
@@ -34,9 +35,10 @@ const LegalFAQPage = lazy(() => import('@/pages/legal/LegalFAQ'));
 function App() {
   return (
     <GameStateProvider>
-      <Router>
-        <AgeVerification onVerified={() => {}} />
-        <ResponsibleGamingWarnings />
+      <PremiumThemeProvider>
+        <Router>
+          <AgeVerification onVerified={() => {}} />
+          <ResponsibleGamingWarnings />
         <GameTransitionManager>
           <Suspense fallback={<div className="flex items-center justify-center min-h-screen">
             <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
@@ -65,9 +67,10 @@ function App() {
         </GameTransitionManager>
         <Toaster />
         <ConsentBanner />
-        <PWAInstallPrompt />
-        <OptimizedPerformanceManager />
-      </Router>
+          <PWAInstallPrompt />
+          <OptimizedPerformanceManager />
+        </Router>
+      </PremiumThemeProvider>
     </GameStateProvider>
   );
 }
